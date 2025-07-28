@@ -2,65 +2,52 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\adoption;
-use App\Http\Requests\StoreadoptionRequest;
-use App\Http\Requests\UpdateadoptionRequest;
+use App\Models\Adoption;
+use Illuminate\Http\Request;
 
 class AdoptionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $adoptions = Adoption::included()->filter()->sort()->getOrPaginate();
+        return response()->json($adoptions);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(Request $request)
     {
-        //
+        $request->validate([
+            'status' => 'required|in:pending,approved,rejected',
+            'comment' => 'nullable|string',
+            'pet_id' => 'nullable|exists:pets,id',
+            'shelter_id' => 'nullable|exists:shelters,id',
+        ]);
+
+        $adoption = Adoption::create($request->all());
+        return response()->json($adoption, 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreadoptionRequest $request)
+    public function show($id)
     {
-        //
+        $adoption = Adoption::with(['pet', 'shelter'])->findOrFail($id);
+        return response()->json($adoption);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(adoption $adoption)
+    public function update(Request $request, Adoption $adoption)
     {
-        //
+        $request->validate([
+            'status' => 'sometimes|in:pending,approved,rejected',
+            'comment' => 'nullable|string',
+            'pet_id' => 'nullable|exists:pets,id',
+            'shelter_id' => 'nullable|exists:shelters,id',
+        ]);
+
+        $adoption->update($request->all());
+        return response()->json($adoption);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(adoption $adoption)
+    public function destroy(Adoption $adoption)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateadoptionRequest $request, adoption $adoption)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(adoption $adoption)
-    {
-        //
+        $adoption->delete();
+        return response()->json(['message' => 'Deleted successfully']);
     }
 }

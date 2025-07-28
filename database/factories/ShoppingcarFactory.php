@@ -2,22 +2,20 @@
 
 namespace Database\Factories;
 
+use App\Models\Shoppingcar;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\shoppingcar>
- */
 class ShoppingcarFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = Shoppingcar::class;
+
     public function definition(): array
     {
         return [
-            //
+            'amount' => $this->faker->randomFloat(2, 5, 1000),
+            'date' => $this->faker->date(),
+            'user_id' => User::inRandomOrder()->first()?->id,
         ];
     }
 }

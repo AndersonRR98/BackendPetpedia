@@ -2,22 +2,23 @@
 
 namespace Database\Factories;
 
+use App\Models\Appointment;
+use App\Models\Trainer;
+use App\Models\Veterinary;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\appointment>
- */
 class AppointmentFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = Appointment::class;
+
     public function definition(): array
     {
         return [
-            //
+            'date' => $this->faker->date(),
+            'description' => $this->faker->time(), // porque el campo es `time`
+            'status' => $this->faker->randomElement(['pending', 'confirmed', 'cancelled']),
+            'trainer_id' => Trainer::inRandomOrder()->first()?->id,
+            'veterinary_id' => Veterinary::inRandomOrder()->first()?->id,
         ];
     }
 }

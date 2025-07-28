@@ -4,20 +4,18 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\trainer>
- */
 class TrainerFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            //
+            'name' => $this->faker->name,
+            'specialty' => $this->faker->word,
+            'experience' => $this->faker->numberBetween(1, 20),
+            'qualifications' => $this->faker->sentence(6),
+            'phone' => $this->faker->phoneNumber,
+            'email' => $this->faker->unique()->safeEmail,
+            'biography' => $this->faker->paragraph,
         ];
     }
 }

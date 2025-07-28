@@ -2,65 +2,54 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\veterinary;
-use App\Http\Requests\StoreveterinaryRequest;
-use App\Http\Requests\UpdateveterinaryRequest;
+use App\Models\Veterinary;
+use Illuminate\Http\Request;
 
 class VeterinaryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $vets = Veterinary::included()->filter()->sort()->getOrPaginate();
+        return response()->json($vets);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|email|unique:veterinaries,email',
+            'phone' => 'required|string',
+            'address' => 'required|string',
+            'schedules' => 'required|array',
+        ]);
+
+        $vet = Veterinary::create($request->all());
+        return response()->json($vet, 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreveterinaryRequest $request)
+    public function show($id)
     {
-        //
+        $vet = Veterinary::findOrFail($id);
+        return response()->json($vet);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(veterinary $veterinary)
+    public function update(Request $request, Veterinary $veterinary)
     {
-        //
+        $request->validate([
+            'name' => 'sometimes|string',
+            'email' => 'sometimes|email|unique:veterinaries,email,' . $veterinary->id,
+            'phone' => 'sometimes|string',
+            'address' => 'sometimes|string',
+            'schedules' => 'sometimes|array',
+        ]);
+
+        $veterinary->update($request->all());
+        return response()->json($veterinary);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(veterinary $veterinary)
+    public function destroy(Veterinary $veterinary)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateveterinaryRequest $request, veterinary $veterinary)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(veterinary $veterinary)
-    {
-        //
+        $veterinary->delete();
+        return response()->json(['message' => 'Eliminado con éxito']);
     }
 }

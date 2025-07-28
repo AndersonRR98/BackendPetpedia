@@ -2,65 +2,53 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\topic;
-use App\Http\Requests\StoretopicRequest;
-use App\Http\Requests\UpdatetopicRequest;
+use App\Models\Topic;
+use Illuminate\Http\Request;
 
 class TopicController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        // Si estás usando los scopes personalizados como included(), filter(), sort(), getOrPaginate()
+        $topics = Topic::included()->filter()->sort()->getOrPaginate();
+        return response()->json($topics);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'creation_date' => 'required|date',
+            'forum_id' => 'nullable|exists:forums,id',
+        ]);
+
+        $topic = Topic::create($request->all());
+        return response()->json($topic, 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoretopicRequest $request)
+    public function show($id)
     {
-        //
+        $topic = Topic::with('forum')->findOrFail($id);
+        return response()->json($topic);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(topic $topic)
+    public function update(Request $request, Topic $topic)
     {
-        //
+        $request->validate([
+            'title' => 'sometimes|string|max:255',
+            'description' => 'nullable|string',
+            'creation_date' => 'sometimes|date',
+            'forum_id' => 'nullable|exists:forums,id',
+        ]);
+
+        $topic->update($request->all());
+        return response()->json($topic);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(topic $topic)
+    public function destroy(Topic $topic)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatetopicRequest $request, topic $topic)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(topic $topic)
-    {
-        //
+        $topic->delete();
+        return response()->json(['message' => 'Deleted successfully']);
     }
 }

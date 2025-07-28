@@ -2,65 +2,54 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\appointment;
-use App\Http\Requests\StoreappointmentRequest;
-use App\Http\Requests\UpdateappointmentRequest;
+use App\Models\Appointment;
+use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $appointments = Appointment::included()->filter()->sort()->getOrPaginate();
+        return response()->json($appointments);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(Request $request)
     {
-        //
+        $request->validate([
+            'date' => 'required|date',
+            'description' => 'required|date_format:H:i:s',
+            'status' => 'in:pending,confirmed,cancelled',
+            'trainer_id' => 'nullable|exists:trainers,id',
+            'veterinary_id' => 'nullable|exists:veterinaries,id',
+        ]);
+
+        $appointment = Appointment::create($request->all());
+        return response()->json($appointment, 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreappointmentRequest $request)
+    public function show($id)
     {
-        //
+        $appointment = Appointment::with(['trainer', 'veterinary'])->findOrFail($id);
+        return response()->json($appointment);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(appointment $appointment)
+    public function update(Request $request, Appointment $appointment)
     {
-        //
+        $request->validate([
+            'date' => 'sometimes|date',
+            'description' => 'sometimes|date_format:H:i:s',
+            'status' => 'sometimes|in:pending,confirmed,cancelled',
+            'trainer_id' => 'nullable|exists:trainers,id',
+            'veterinary_id' => 'nullable|exists:veterinaries,id',
+        ]);
+
+        $appointment->update($request->all());
+        return response()->json($appointment);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(appointment $appointment)
+    public function destroy(Appointment $appointment)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateappointmentRequest $request, appointment $appointment)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(appointment $appointment)
-    {
-        //
+        $appointment->delete();
+        return response()->json(['message' => 'Deleted successfully']);
     }
 }

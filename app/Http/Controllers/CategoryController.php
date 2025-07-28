@@ -2,65 +2,47 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\category;
-use App\Http\Requests\StorecategoryRequest;
-use App\Http\Requests\UpdatecategoryRequest;
+use App\Models\Category;
+use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $categories = Category::included()->filter()->sort()->getOrPaginate();
+        return response()->json($categories);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $category = Category::create($request->all());
+        return response()->json($category, 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StorecategoryRequest $request)
+    public function show(Category $category)
     {
-        //
+        return response()->json($category);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(category $category)
+    public function update(Request $request, Category $category)
     {
-        //
+        $request->validate([
+            'name' => 'string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $category->update($request->all());
+        return response()->json($category);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(category $category)
+    public function destroy(Category $category)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatecategoryRequest $request, category $category)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(category $category)
-    {
-        //
+        $category->delete();
+        return response()->json(['message' => 'Deleted successfully']);
     }
 }

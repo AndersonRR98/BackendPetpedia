@@ -2,65 +2,50 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\shoppingcar;
-use App\Http\Requests\StoreshoppingcarRequest;
-use App\Http\Requests\UpdateshoppingcarRequest;
+use App\Models\Shoppingcar;
+use Illuminate\Http\Request;
 
 class ShoppingcarController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $shoppingcars = Shoppingcar::included()->filter()->sort()->getOrPaginate();
+        return response()->json($shoppingcars);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(Request $request)
     {
-        //
+        $request->validate([
+            'amount' => 'required|numeric',
+            'date' => 'required|date',
+            'user_id' => 'nullable|exists:users,id',
+        ]);
+
+        $shoppingcar = Shoppingcar::create($request->all());
+        return response()->json($shoppingcar, 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreshoppingcarRequest $request)
+    public function show($id)
     {
-        //
+        $shoppingcar = Shoppingcar::with('user')->findOrFail($id);
+        return response()->json($shoppingcar);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(shoppingcar $shoppingcar)
+    public function update(Request $request, Shoppingcar $shoppingcar)
     {
-        //
+        $request->validate([
+            'amount' => 'sometimes|numeric',
+            'date' => 'sometimes|date',
+            'user_id' => 'nullable|exists:users,id',
+        ]);
+
+        $shoppingcar->update($request->all());
+        return response()->json($shoppingcar);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(shoppingcar $shoppingcar)
+    public function destroy(Shoppingcar $shoppingcar)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateshoppingcarRequest $request, shoppingcar $shoppingcar)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(shoppingcar $shoppingcar)
-    {
-        //
+        $shoppingcar->delete();
+        return response()->json(['message' => 'Deleted successfully']);
     }
 }

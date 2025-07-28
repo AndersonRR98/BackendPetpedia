@@ -2,22 +2,26 @@
 
 namespace Database\Factories;
 
+use App\Models\Service;
+use App\Models\Trainer;
+use App\Models\Requestt;
+use App\Models\Veterinary;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\service>
- */
 class ServiceFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = Service::class;
+
     public function definition(): array
     {
         return [
-            //
+            'name' => $this->faker->word,
+            'price' => $this->faker->randomFloat(2, 10, 500),
+            'description' => $this->faker->paragraph,
+            'duration' => $this->faker->dateTime,
+            'trainer_id' => Trainer::inRandomOrder()->first()?->id,
+            'requestt_id' => Requestt::inRandomOrder()->first()?->id,
+            'veterinary_id' => Veterinary::inRandomOrder()->first()?->id,
         ];
     }
 }

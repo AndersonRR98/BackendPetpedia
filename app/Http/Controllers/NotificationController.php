@@ -2,65 +2,52 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\notification;
-use App\Http\Requests\StorenotificationRequest;
-use App\Http\Requests\UpdatenotificationRequest;
+use App\Models\Notification;
+use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $notifications = Notification::included()->filter()->sort()->getOrPaginate();
+        return response()->json($notifications);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'user_id' => 'nullable|exists:users,id',
+            'appointment_id' => 'nullable|exists:appointments,id',
+        ]);
+
+        $notification = Notification::create($request->all());
+        return response()->json($notification, 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StorenotificationRequest $request)
+    public function show($id)
     {
-        //
+        $notification = Notification::with(['user', 'appointment'])->findOrFail($id);
+        return response()->json($notification);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(notification $notification)
+    public function update(Request $request, Notification $notification)
     {
-        //
+        $request->validate([
+            'title' => 'sometimes|string|max:255',
+            'description' => 'sometimes|string',
+            'user_id' => 'nullable|exists:users,id',
+            'appointment_id' => 'nullable|exists:appointments,id',
+        ]);
+
+        $notification->update($request->all());
+        return response()->json($notification);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(notification $notification)
+    public function destroy(Notification $notification)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatenotificationRequest $request, notification $notification)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(notification $notification)
-    {
-        //
+        $notification->delete();
+        return response()->json(['message' => 'Deleted successfully']);
     }
 }

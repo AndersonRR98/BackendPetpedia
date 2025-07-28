@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->string('image')->nullable();
             $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('cascade');
-           //$table->foreignId('veterinary_id')->nullable()->constrained('veterinaries')->onDelete('cascade');
+           $table->foreignId('veterinary_id')->nullable()->constrained('veterinaries')->onDelete('cascade');
            $table->foreignId('shoppingcar_id')->nullable()->constrained('shoppingcars')->onDelete('cascade');
            
             $table->timestamps();

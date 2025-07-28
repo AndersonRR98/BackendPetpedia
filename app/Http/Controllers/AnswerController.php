@@ -2,65 +2,50 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\answer;
-use App\Http\Requests\StoreanswerRequest;
-use App\Http\Requests\UpdateanswerRequest;
+use App\Models\Answer;
+use Illuminate\Http\Request;
 
 class AnswerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $answers = Answer::included()->filter()->sort()->getOrPaginate();
+        return response()->json($answers);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(Request $request)
     {
-        //
+        $request->validate([
+            'content' => 'required|string',
+            'creation_date' => 'required|date',
+            'topic_id' => 'nullable|exists:topics,id',
+        ]);
+
+        $answer = Answer::create($request->all());
+        return response()->json($answer, 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreanswerRequest $request)
+    public function show($id)
     {
-        //
+        $answer = Answer::with('topic')->findOrFail($id);
+        return response()->json($answer);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(answer $answer)
+    public function update(Request $request, Answer $answer)
     {
-        //
+        $request->validate([
+            'content' => 'sometimes|string',
+            'creation_date' => 'sometimes|date',
+            'topic_id' => 'nullable|exists:topics,id',
+        ]);
+
+        $answer->update($request->all());
+        return response()->json($answer);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(answer $answer)
+    public function destroy(Answer $answer)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateanswerRequest $request, answer $answer)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(answer $answer)
-    {
-        //
+        $answer->delete();
+        return response()->json(['message' => 'Deleted successfully']);
     }
 }

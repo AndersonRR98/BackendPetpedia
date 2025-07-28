@@ -2,65 +2,54 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\average;
-use App\Http\Requests\StoreaverageRequest;
-use App\Http\Requests\UpdateaverageRequest;
+use App\Models\Average;
+use Illuminate\Http\Request;
 
 class AverageController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $averages = Average::included()->filter()->sort()->getOrPaginate();
+        return response()->json($averages);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(Request $request)
     {
-        //
+        $request->validate([
+            'type' => 'required|string',
+            'url' => 'required|url',
+            'upload_date' => 'nullable|date',
+            'topic_id' => 'nullable|exists:topics,id',
+            'answer_id' => 'nullable|exists:answers,id',
+        ]);
+
+        $average = Average::create($request->all());
+        return response()->json($average, 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreaverageRequest $request)
+    public function show($id)
     {
-        //
+        $average = Average::with(['topic', 'answer'])->findOrFail($id);
+        return response()->json($average);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(average $average)
+    public function update(Request $request, Average $average)
     {
-        //
+        $request->validate([
+            'type' => 'sometimes|string',
+            'url' => 'sometimes|url',
+            'upload_date' => 'nullable|date',
+            'topic_id' => 'nullable|exists:topics,id',
+            'answer_id' => 'nullable|exists:answers,id',
+        ]);
+
+        $average->update($request->all());
+        return response()->json($average);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(average $average)
+    public function destroy(Average $average)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateaverageRequest $request, average $average)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(average $average)
-    {
-        //
+        $average->delete();
+        return response()->json(['message' => 'Eliminado con éxito']);
     }
 }

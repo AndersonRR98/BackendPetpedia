@@ -2,65 +2,58 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\trainer;
-use App\Http\Requests\StoretrainerRequest;
-use App\Http\Requests\UpdatetrainerRequest;
+use App\Models\Trainer;
+use Illuminate\Http\Request;
 
 class TrainerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $trainers = Trainer::included()->filter()->sort()->getOrPaginate();
+        return response()->json($trainers);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string',
+            'specialty' => 'required|string',
+            'experience' => 'required|integer',
+            'qualifications' => 'required|string',
+            'phone' => 'required|string',
+            'email' => 'required|email|unique:trainers,email',
+            'biography' => 'required|string',
+        ]);
+
+        $trainer = Trainer::create($request->all());
+        return response()->json($trainer, 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoretrainerRequest $request)
+    public function show($id)
     {
-        //
+        $trainer = Trainer::findOrFail($id);
+        return response()->json($trainer);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(trainer $trainer)
+    public function update(Request $request, Trainer $trainer)
     {
-        //
+        $request->validate([
+            'name' => 'sometimes|string',
+            'specialty' => 'sometimes|string',
+            'experience' => 'sometimes|integer',
+            'qualifications' => 'sometimes|string',
+            'phone' => 'sometimes|string',
+            'email' => 'sometimes|email|unique:trainers,email,' . $trainer->id,
+            'biography' => 'sometimes|string',
+        ]);
+
+        $trainer->update($request->all());
+        return response()->json($trainer);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(trainer $trainer)
+    public function destroy(Trainer $trainer)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatetrainerRequest $request, trainer $trainer)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(trainer $trainer)
-    {
-        //
+        $trainer->delete();
+        return response()->json(['message' => 'Eliminado con éxito']);
     }
 }

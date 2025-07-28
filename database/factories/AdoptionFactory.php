@@ -2,22 +2,22 @@
 
 namespace Database\Factories;
 
+use App\Models\Adoption;
+use App\Models\Pet;
+use App\Models\Shelter;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\adoption>
- */
 class AdoptionFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = Adoption::class;
+
     public function definition(): array
     {
         return [
-            //
+            'status' => $this->faker->randomElement(['pending', 'approved', 'rejected']),
+            'comment' => $this->faker->sentence,
+            'pet_id' => Pet::inRandomOrder()->first()?->id,
+            'shelter_id' => Shelter::inRandomOrder()->first()?->id,
         ];
     }
 }
