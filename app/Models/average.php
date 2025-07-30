@@ -1,32 +1,54 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
-class average extends Model
-{
-    /** @use HasFactory<\Database\Factories\AverageFactory> */
-    use HasFactory;
-    
-   protected $fillable=[
-    'type',
-    'url',
-    'upload_date',
-    'topic_id',
-    'answer_id'
-   ];
 
-   public function topics(){
-        return $this->belongsto(topic::class);
-   }
-   public function answers(){
-        return $this->belongsto(answer::class);
-}
-   protected function getAllowIncluded()
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class Average extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'type',
+        'url',
+        'upload_date',
+        'topic_id',
+        'answer_id'
+    ];
+
+    protected $allowFilter = [
+        'id',
+        'value',
+        'creation_date',
+        'topic_id',
+        'answer_id',
+    ];
+
+    protected $allowSort = [
+        'id',
+        'value',
+        'creation_date',  
+        'topic_id',
+        'answer_id',
+    ];
+
+    // ✅ Relaciones corregidas con tipo de retorno y nombre correcto
+    public function topic(): BelongsTo
+    {
+        return $this->belongsTo(Topic::class);
+    }
+
+    public function answer(): BelongsTo
+    {
+        return $this->belongsTo(Answer::class);
+    }
+
+    // ✅ Detectar relaciones incluidas
+    protected function getAllowIncluded()
     {
         return collect(get_class_methods($this))
             ->filter(function ($method) {
@@ -38,7 +60,7 @@ class average extends Model
             })->values()->all();
     }
 
-    // 🔍 Scope para permitir ?included=relacion1,relacion2
+    // Scopes
     public function scopeIncluded(Builder $query)
     {
         $allowIncluded = $this->getAllowIncluded();
@@ -58,7 +80,6 @@ class average extends Model
         $query->with($relations);
     }
 
-    // 🔎 Scope para permitir ?filter[columna]=valor
     public function scopeFilter(Builder $query)
     {
         if (empty($this->allowFilter) || empty(request('filter'))) {
@@ -66,41 +87,47 @@ class average extends Model
         }
 
         $filters = request('filter');
+        $allowFilter = collect($this->allowFilter);
 
-        foreach ($filters as $column => $value) {
-            if (in_array($column, $this->allowFilter)) {
-                $query->where($column, 'LIKE', '%' . $value . '%');
+        foreach ($filters as $filter => $value) {
+            if ($allowFilter->contains($filter)) {
+                $query->where($filter, 'LIKE', '%' . $value . '%');
             }
         }
-        
     }
-      public function scopeGetOrPaginate(Builder $query)
+
+    public function scopeSort(Builder $query)
     {
-      if (request('perPage')) {
-            $perPage = intval(request('perPage'));//transformamos la cadena que llega en un numero.
+        if (empty($this->allowSort) || empty(request('sort'))) {
+            return;
+        }
 
-            if($perPage){//como la funcion intval retorna 0 si no puede hacer la conversion 0  es = false
-                return $query->paginate($perPage);//retornamos la cuonsulta de acuerdo a la ingresado en la vaiable $perPage
+        $sortFields = explode(',', request('sort'));
+        $allowSort = collect($this->allowSort);
+
+        foreach ($sortFields as $sortField) {
+            $direction = 'asc';
+            if (substr($sortField, 0, 1) === '-') {
+                $direction = 'desc';
+                $sortField = substr($sortField, 1);
             }
-
-
-         }
-           return $query->get();//sino se pasa el valor de $perPage en la URL se pasan todos los registros.
-        //http://api.codersfree1.test/v1/categories?perPage=2
+            if ($allowSort->contains($sortField)) {
+                $query->orderBy($sortField, $direction);
+            }
+        }
     }
 
-      
-// App\Models\Forum.php
-
-public function scopeSort($query)
-{
-    if (request()->has('sort_by') && request()->has('sort_direction')) {
-        $column = request('sort_by');
-        $direction = request('sort_direction');
-
-        // Validar columnas permitidas
-        $allowed = ['title', 'creation_date'];
-        if (in_array($column, $allowed)) {
-            return $query->orderBy($column, $direction);
+    public function scopeGetOrPaginate(Builder $query)
+    {
+        if (request('perPage')) {
+            $perPage = intval(request('perPage'));
+            if ($perPage) {
+                return $query->paginate($perPage);
+            }
         }
-    }}}
+        return $query->get();
+    }
+}
+
+
+//url GET /api/averages?included=topic,answer

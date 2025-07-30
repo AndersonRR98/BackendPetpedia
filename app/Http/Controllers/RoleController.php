@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\profile;
-use App\Http\Requests\StoreprofileRequest;
-use App\Http\Requests\UpdateprofileRequest;
+use App\Models\role;
+use App\Http\Requests\StoreroleRequest;
+use App\Http\Requests\UpdateroleRequest;
 
-class ProfileController extends Controller
+class RoleController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -27,7 +27,7 @@ class ProfileController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreprofileRequest $request)
+    public function store(StoreroleRequest $request)
     {
         //
     }
@@ -35,7 +35,7 @@ class ProfileController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(profile $profile)
+    public function show(role $role)
     {
         //
     }
@@ -43,7 +43,7 @@ class ProfileController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(profile $profile)
+    public function edit(role $role)
     {
         //
     }
@@ -51,7 +51,7 @@ class ProfileController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateprofileRequest $request, profile $profile)
+    public function update(UpdateroleRequest $request, role $role)
     {
         //
     }
@@ -59,7 +59,7 @@ class ProfileController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(profile $profile)
+    public function destroy(role $role)
     {
         //
     }

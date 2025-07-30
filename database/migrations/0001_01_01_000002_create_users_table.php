@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             //se hace la foranea de la tabla con perfiles es una tabla polimorfica la cual se escoge su rol y se conecta automaticamente
-            $table->foreignId('profile_id')->nullable()->constrained('profiles')->onDelete('set null');
+            $table->foreignId('role_id')->nullable()->constrained('roles')->onDelete('set null');
             $table->rememberToken();
             $table->timestamps();
         });

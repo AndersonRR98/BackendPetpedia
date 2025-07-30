@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\profile;
+use App\Models\role;
 use Illuminate\Auth\Access\Response;
 
-class ProfilePolicy
+class RolePolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -19,7 +19,7 @@ class ProfilePolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, profile $profile): bool
+    public function view(User $user, role $role): bool
     {
         return false;
     }
@@ -35,7 +35,7 @@ class ProfilePolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, profile $profile): bool
+    public function update(User $user, role $role): bool
     {
         return false;
     }
@@ -43,7 +43,7 @@ class ProfilePolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, profile $profile): bool
+    public function delete(User $user, role $role): bool
     {
         return false;
     }
@@ -51,7 +51,7 @@ class ProfilePolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, profile $profile): bool
+    public function restore(User $user, role $role): bool
     {
         return false;
     }
@@ -59,7 +59,7 @@ class ProfilePolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, profile $profile): bool
+    public function forceDelete(User $user, role $role): bool
     {
         return false;
     }

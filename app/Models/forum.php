@@ -5,15 +5,38 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 class forum extends Model
-{
-      //LISTAS BLANCAS
-    protected $allowIncluded = ['']; //las posibles Querys que se pueden realizar
-    protected $allowFilter = ['id', 'name'];
-    protected $allowSort = ['id', 'name'];
-    
-    protected function getAllowIncluded()
+{ protected $allowFilter = [
+        'title',
+        'description',
+        'creation_date',
+        'user_id',
+    ];
+    protected $allowSort = [
+        'title',
+        'description',
+        'creation_date',
+        'user_id',
+    ];
+       protected $fillable = [
+        'title',
+        'description',
+        'creation_date',
+        'user_id',
+    ];
+    public function user():BelongsTo
+    {
+        return $this ->belongsto(User::class);
+    }
+    public function topics():HasMany
+    {
+        return $this->hasmany(topic::class);
+    }
+
+     protected function getAllowIncluded()
     {
         return collect(get_class_methods($this))
             ->filter(function ($method) {
@@ -23,45 +46,73 @@ class forum extends Model
                        !$reflection->getParameters() &&
                        Str::startsWith((string) $reflection->getReturnType(), 'Illuminate\Database\Eloquent\Relations');
             })->values()->all();
+    } 
+   public function scopeIncluded(Builder $query)
+{
+    $allowIncluded = $this->getAllowIncluded();
+
+    if (empty($allowIncluded) || empty(request('included'))) {
+        return;
     }
 
-    // 🔍 Scope para permitir ?included=relacion1,relacion2
-    public function scopeIncluded(Builder $query)
-    {
-        $allowIncluded = $this->getAllowIncluded();
+    $relations = explode(',', request('included'));
 
-        if (empty($allowIncluded) || empty(request('included'))) {
-            return;
+    foreach ($relations as $key => $relation) {
+        if (!in_array($relation, $allowIncluded)) {
+            unset($relations[$key]);
         }
-
-        $relations = explode(',', request('included'));
-
-        foreach ($relations as $key => $relation) {
-            if (!in_array($relation, $allowIncluded)) {
-                unset($relations[$key]);
-            }
-        }
-
-        $query->with($relations);
     }
 
-    // 🔎 Scope para permitir ?filter[columna]=valor
-    public function scopeFilter(Builder $query)
+    $query->with($relations);
+}
+
+     public function scopeFilter(Builder $query)
     {
+
         if (empty($this->allowFilter) || empty(request('filter'))) {
             return;
         }
 
         $filters = request('filter');
 
-        foreach ($filters as $column => $value) {
-            if (in_array($column, $this->allowFilter)) {
-                $query->where($column, 'LIKE', '%' . $value . '%');
+        $allowFilter = collect($this->allowFilter);
+
+        foreach ($filters as $filter => $value) {
+
+            if ($allowFilter->contains($filter)) {
+
+                $query->where($filter, 'LIKE', '%' . $value . '%');//nos retorna todos los registros que conincidad, asi sea en una porcion del texto
             }
         }
-        
+
     }
-      public function scopeGetOrPaginate(Builder $query)
+
+    public function scopeSort(Builder $query)
+    {
+
+     if (empty($this->allowSort) || empty(request('sort'))) {
+            return;
+        }
+
+        $sortFields = explode(',', request('sort'));
+        $allowSort = collect($this->allowSort);
+
+      foreach ($sortFields as $sortField) {
+
+            $direction = 'asc';
+
+            if(substr($sortField, 0,1)=='-'){ //cambiamos la consulta a 'desc'si el usuario antecede el menos (-) en el valor de la variable sort
+                $direction = 'desc';
+                $sortField = substr($sortField,1);//copiamos el valor de sort pero omitiendo, el primer caracter por eso inicia desde el indice 1
+            }
+            if ($allowSort->contains($sortField)) {
+                $query->orderBy($sortField, $direction);//ejecutamos la query con la direccion deseada sea 'asc' o 'desc'
+            }
+        }
+        //http://api.blog.test/v1/categories?sort=name
+    }
+
+    public function scopeGetOrPaginate(Builder $query)
     {
       if (request('perPage')) {
             $perPage = intval(request('perPage'));//transformamos la cadena que llega en un numero.
@@ -76,35 +127,14 @@ class forum extends Model
         //http://api.codersfree1.test/v1/categories?perPage=2
     }
 
-      
-// App\Models\Forum.php
-
-public function scopeSort($query)
+/*public function scopeIncluded(Builder $query)
 {
-    if (request()->has('sort_by') && request()->has('sort_direction')) {
-        $column = request('sort_by');
-        $direction = request('sort_direction');
+    $allowIncluded = $this->getAllowIncluded();
+    dd($allowIncluded); // Esto te mostrará qué relaciones encontró
 
-        // Validar columnas permitidas
-        $allowed = ['title', 'creation_date'];
-        if (in_array($column, $allowed)) {
-            return $query->orderBy($column, $direction);
-        }
-    }
 
-    return $query;
+}*/
+
 }
 
-    protected $fillable = [
-        'title',
-        'description',
-        'creation_date',
-        'user_id',
-    ];
-    public function users(){
-        return $this ->belongsto(User::class);
-    }
-    public function topics(){
-        return $this->hasmany(topic::class);
-    }
-}
+   

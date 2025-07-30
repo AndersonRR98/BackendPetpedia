@@ -11,7 +11,12 @@ class PetController extends Controller
     {
         $pets = Pet::included()->filter()->sort()->getOrPaginate();
         return response()->json($pets);
+
+            // $pets = Pet::with(['user', 'veterinary', 'shelter'])->get()->included()->filter()->sort()->getOrPaginate();
+            // return response()->json($pets);
     }
+
+
 
     public function store(Request $request)
     {

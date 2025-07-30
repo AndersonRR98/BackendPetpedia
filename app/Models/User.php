@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Str;
 class User extends Authenticatable
 {
@@ -18,32 +23,57 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+    protected $allowFilter = [
+        'id',
+        'name',
+        'email',
+        'password',
+        'role_id',
+    ];  
+    protected $allowSort = [
+        'id',
+        'name',
+        'email',
+        'password',
+        'role_id',
+    ];
     // el fillable es para hacer una asignacion masiva donde se pueden llenar los campos de seeder o datos por lo tanto si esto queda vacio no se podra crear un dato 
     protected $fillable = [
         'name',
         'email',
         'password',
-        'profile_id',
+        'role_id',
     ];
    
-    // se crearon todas las relaciones que tiene users hasta la polimorfica 
-public function forums(){
+    // se crearon todas las relaciones que tiene users hasta la polimorfica
+    
+public function forums():HasMany
+{
     return $this->hasmany(forum::class);
 }
-public function orders(){
+public function role():BelongsTo
+{
+    return $this->belongsTo(role::class);
+}
+public function orders():HasMany
+{
     return $this->hasmany(order::class);
 }
-public function shoppingcart(){
+public function shoppingcarts():HasOne
+{
     return $this->hasone(shoppingcar::class);
 }
 
-public function notifications(){
+public function notifications():HasMany
+{
     return $this->hasmany(notification::class);
 }
-public function requestts(){
+public function requestts():HasMany
+{
     return $this->hasmany(requestt::class);
 }
-public function pets(){
+public function pets():HasMany
+{
     return $this->hasmany(pet::class);
 }
 //tabla polimorfica  con pagos
@@ -51,29 +81,11 @@ public function pets(){
 //modelo de perfil que es polimorfico este es cuanod la rlacion es de uno a uno 
 //morphone es cuando es de uno a uno
 //morphmany es cuando es de uno a muchos
-public function payments(){
+public function payments():MorphMany
+{
     return $this->morphmany(payment::class, 'payable'); // ← relación polimórfica
 }
- public function profile()
-    {
-        return $this->morphOne(Profile::class, 'profileable'); // ← relación polimórfica directa
-    }
-    //esto sirve para cuando se quiera ingresar como admi y subadmin 
- public function isAdmin()
-    {
-        return $this->role === 'admin';
-    }
-
-    public function isSubadmin()
-    {
-        return $this->role === 'subadmin';
-    }
-    // se ingresa como cliente 
-    public function iscustomer()
-    {
-        return $this->role === 'customer';
-    }
-      protected function getAllowIncluded()
+     protected function getAllowIncluded()
     {
         return collect(get_class_methods($this))
             ->filter(function ($method) {
@@ -83,45 +95,73 @@ public function payments(){
                        !$reflection->getParameters() &&
                        Str::startsWith((string) $reflection->getReturnType(), 'Illuminate\Database\Eloquent\Relations');
             })->values()->all();
+    } 
+   public function scopeIncluded(Builder $query)
+{
+    $allowIncluded = $this->getAllowIncluded();
+
+    if (empty($allowIncluded) || empty(request('included'))) {
+        return;
     }
 
-    // 🔍 Scope para permitir ?included=relacion1,relacion2
-    public function scopeIncluded(Builder $query)
-    {
-        $allowIncluded = $this->getAllowIncluded();
+    $relations = explode(',', request('included'));
 
-        if (empty($allowIncluded) || empty(request('included'))) {
-            return;
+    foreach ($relations as $key => $relation) {
+        if (!in_array($relation, $allowIncluded)) {
+            unset($relations[$key]);
         }
-
-        $relations = explode(',', request('included'));
-
-        foreach ($relations as $key => $relation) {
-            if (!in_array($relation, $allowIncluded)) {
-                unset($relations[$key]);
-            }
-        }
-
-        $query->with($relations);
     }
 
-    // 🔎 Scope para permitir ?filter[columna]=valor
-    public function scopeFilter(Builder $query)
+    $query->with($relations);
+}
+
+     public function scopeFilter(Builder $query)
     {
+
         if (empty($this->allowFilter) || empty(request('filter'))) {
             return;
         }
 
         $filters = request('filter');
 
-        foreach ($filters as $column => $value) {
-            if (in_array($column, $this->allowFilter)) {
-                $query->where($column, 'LIKE', '%' . $value . '%');
+        $allowFilter = collect($this->allowFilter);
+
+        foreach ($filters as $filter => $value) {
+
+            if ($allowFilter->contains($filter)) {
+
+                $query->where($filter, 'LIKE', '%' . $value . '%');//nos retorna todos los registros que conincidad, asi sea en una porcion del texto
             }
         }
-        
+
     }
-      public function scopeGetOrPaginate(Builder $query)
+
+    public function scopeSort(Builder $query)
+    {
+
+     if (empty($this->allowSort) || empty(request('sort'))) {
+            return;
+        }
+
+        $sortFields = explode(',', request('sort'));
+        $allowSort = collect($this->allowSort);
+
+      foreach ($sortFields as $sortField) {
+
+            $direction = 'asc';
+
+            if(substr($sortField, 0,1)=='-'){ //cambiamos la consulta a 'desc'si el usuario antecede el menos (-) en el valor de la variable sort
+                $direction = 'desc';
+                $sortField = substr($sortField,1);//copiamos el valor de sort pero omitiendo, el primer caracter por eso inicia desde el indice 1
+            }
+            if ($allowSort->contains($sortField)) {
+                $query->orderBy($sortField, $direction);//ejecutamos la query con la direccion deseada sea 'asc' o 'desc'
+            }
+        }
+        //http://api.blog.test/v1/categories?sort=name
+    }
+
+    public function scopeGetOrPaginate(Builder $query)
     {
       if (request('perPage')) {
             $perPage = intval(request('perPage'));//transformamos la cadena que llega en un numero.
@@ -136,46 +176,13 @@ public function payments(){
         //http://api.codersfree1.test/v1/categories?perPage=2
     }
 
-      
-// App\Models\Forum.php
-
-public function scopeSort($query)
+/*public function scopeIncluded(Builder $query)
 {
-    if (request()->has('sort_by') && request()->has('sort_direction')) {
-        $column = request('sort_by');
-        $direction = request('sort_direction');
-
-        // Validar columnas permitidas
-        $allowed = ['title', 'creation_date'];
-        if (in_array($column, $allowed)) {
-            return $query->orderBy($column, $direction);
-        }
-    }}
+    $allowIncluded = $this->getAllowIncluded();
+    dd($allowIncluded); // Esto te mostrará qué relaciones encontró
 
 
+}*/
 
 
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
 }

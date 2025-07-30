@@ -3,6 +3,9 @@
 namespace Database\Factories;
 
 use App\Models\Pet;
+use App\Models\shelter;
+use App\Models\User;
+use App\Models\veterinary;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PetFactory extends Factory
@@ -21,9 +24,11 @@ class PetFactory extends Factory
             'description' => $this->faker->paragraph,
             'image' => $this->faker->imageUrl,
             'birth_date' => $this->faker->date(),
-            'shelter_id' => null,         // o Shelter::factory() si quieres crear uno
-            'user_id' => null,
-            'veterinary_id' => null,
+            'user_id' => User::inRandomOrder()->value('id'),
+            'veterinary_id' => veterinary::inRandomOrder()->value('id'),
+            'shelter_id' => shelter::inRandomOrder()->value('id'),
+
+
         ];
     }
 }

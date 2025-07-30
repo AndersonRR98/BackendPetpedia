@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
    ForumSeeder::class,
      TopicSeeder::class,
      answerSeeder::class,
-    // UserSeeder::class,
+    UserSeeder::class,
      averageSeeder::class,
      trainerSeeder::class,
      veterinarySeeder::class,
@@ -57,6 +57,7 @@ class DatabaseSeeder extends Seeder
      orderitemSeeder::class,
      paymentSeeder::class,
      paymentmethoSeeder::class,
+     roleseeder::class,
         ]);
     }
 }
