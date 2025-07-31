@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('phone');
             $table->string('address');
             $table->json('schedules'); // Assuming schedules is a JSON field
+            $table->foreignId('user_id')->constrained('users')->ondelete('set null');
             $table->timestamps();
         });
     }

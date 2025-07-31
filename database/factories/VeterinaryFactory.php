@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-
+use App\Models\User;
 class VeterinaryFactory extends Factory
 {
     public function definition(): array
@@ -14,7 +14,7 @@ class VeterinaryFactory extends Factory
             'phone' => $this->faker->phoneNumber,
             'address' => $this->faker->address,
             'schedules' => json_encode(['08:00-17:00', '08:00-17:00', '08:00-17:00']),
-
+             'user_id' => User::inRandomOrder()->first()?->id,
         ];
     }
 }

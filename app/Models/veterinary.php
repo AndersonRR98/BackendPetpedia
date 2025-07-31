@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Str;
 class veterinary extends Model
@@ -16,12 +17,14 @@ class veterinary extends Model
         'email',
         'phone',
         'address',
+        'user_id'
     ];
     protected $allowSort = [
         'name',
         'email',
         'phone',
         'address',
+        'user:id'
     ];  
     protected $fillable = [
         'name',
@@ -29,7 +32,12 @@ class veterinary extends Model
         'phone',
         'address',
      'schedules' => 'array',
+     'user_id'
     ];
+    public function users():HasOne
+    {
+        return $this->hasOne(user::class);
+    }
     public function services():HasMany
     {
        return $this->hasmany(service::class);

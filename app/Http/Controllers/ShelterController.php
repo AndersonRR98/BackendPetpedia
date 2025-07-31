@@ -21,6 +21,7 @@ class ShelterController extends Controller
             'email' => 'nullable|email',
             'address' => 'nullable|string',
             'responsible' => 'nullable|string',
+            'user_id' => 'nullable|exists:users,id',
         ]);
 
         $shelter = Shelter::create($request->all());
@@ -41,6 +42,7 @@ class ShelterController extends Controller
             'email' => 'nullable|email',
             'address' => 'nullable|string',
             'responsible' => 'nullable|string',
+              'user_id' => 'nullable|exists:users,id',
         ]);
 
         $shelter->update($request->all());

@@ -23,6 +23,7 @@ class TrainerController extends Controller
             'phone' => 'required|string',
             'email' => 'required|email|unique:trainers,email',
             'biography' => 'required|string',
+            'user_id' => 'nullable|exists:users,id',
         ]);
 
         $trainer = Trainer::create($request->all());
@@ -45,6 +46,7 @@ class TrainerController extends Controller
             'phone' => 'sometimes|string',
             'email' => 'sometimes|email|unique:trainers,email,' . $trainer->id,
             'biography' => 'sometimes|string',
+            'user_id' => 'nullable|exists:users,id',
         ]);
 
         $trainer->update($request->all());

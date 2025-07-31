@@ -20,6 +20,7 @@ class shelter extends Model
         'email',
         'address',
         'responsible',
+        'user_id'
     ];
     protected $allowSort = [
         'id',
@@ -28,6 +29,7 @@ class shelter extends Model
         'email',
         'address',
         'responsible',
+        'user_id'
     ];
     protected $fillable = [
         'name',
@@ -35,7 +37,12 @@ class shelter extends Model
         'email',
         'address',
         'responsible',
+        'user_id'
     ];
+    public function users():HasOne
+    {
+        return $this->hasone(user::class);
+    }
     public function adoptions():HasMany
     {
         return $this->hasMany(Adoption::class);
@@ -44,9 +51,7 @@ class shelter extends Model
     {
         return $this->hasone(Pet::class);
     }
-    public function users(){
-        return $this->hasmany(user::class);
-    }
+   
    protected function getAllowIncluded()
     {
         return collect(get_class_methods($this))

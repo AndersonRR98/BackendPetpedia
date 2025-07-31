@@ -21,6 +21,7 @@ class VeterinaryController extends Controller
             'phone' => 'required|string',
             'address' => 'required|string',
             'schedules' => 'required|array',
+            'user_id' => 'nullable|exists:users,id',
         ]);
 
         $vet = Veterinary::create($request->all());
@@ -41,6 +42,7 @@ class VeterinaryController extends Controller
             'phone' => 'sometimes|string',
             'address' => 'sometimes|string',
             'schedules' => 'sometimes|array',
+            'user_id' => 'nullable|exists:users,id',
         ]);
 
         $veterinary->update($request->all());

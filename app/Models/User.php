@@ -13,7 +13,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Str;
-class User extends Authenticatable
+use Tymon\JWTAuth\Contracts\JWTSubject;
+
+class User extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -44,8 +46,30 @@ class User extends Authenticatable
         'password',
         'role_id',
     ];
+    // estas son las jwt los token de seguridad para la pagina 
+      public function getJWTIdentifier() {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims() {
+        return [];
+    }
    
     // se crearon todas las relaciones que tiene users hasta la polimorfica
+    public function veterinary ():BelongsTo
+    {
+        return $this ->belongsTo(veterinary::class);
+    }
+
+    public function shelter():BelongsTo
+    {
+        return $this->belongsTo(shelter::class);
+    }
+    public function trainer():BelongsTo
+    {
+        return $this->belongsTo(trainer::class);
+    }
+
     
 public function forums():HasMany
 {

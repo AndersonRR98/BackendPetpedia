@@ -17,7 +17,6 @@ class payment extends Model
         'date',
         'status',
         'user_id',
-        'payment_id',
         'payment_type',
     ];
     protected $allowSort = [
@@ -25,7 +24,6 @@ class payment extends Model
         'date',
         'status',
         'user_id',
-        'payment_id',
         'payment_type',
     ];
     protected $fillable = [
@@ -33,7 +31,6 @@ class payment extends Model
         'date',
         'status',
         'user_id',
-        'payment_id',
         'payment_type',
     ];
     //el polimorfismo de pagos entre veterinaria entrenador y pagos
