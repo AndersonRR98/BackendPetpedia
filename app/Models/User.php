@@ -30,6 +30,7 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'image_path',
         'role_id',
     ];  
     protected $allowSort = [
@@ -37,6 +38,7 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+         'image_path',
         'role_id',
     ];
     // el fillable es para hacer una asignacion masiva donde se pueden llenar los campos de seeder o datos por lo tanto si esto queda vacio no se podra crear un dato 
@@ -44,6 +46,7 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+         'image_path',
         'role_id',
     ];
     // estas son las jwt los token de seguridad para la pagina 
@@ -159,6 +162,12 @@ public function payments():MorphMany
         }
 
     }
+    // En el modelo Veterinary
+public function getImageUrlAttribute()
+{
+    return $this->image_path ? asset('storage/' . $this->image_path) : null;
+}
+
 
     public function scopeSort(Builder $query)
     {

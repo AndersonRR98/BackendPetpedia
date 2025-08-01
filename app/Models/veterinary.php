@@ -12,11 +12,13 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Str;
 class veterinary extends Model
 {
+    use HasFactory;
    protected $allowFilter = [
         'name',
         'email',
         'phone',
         'address',
+         'image_path',
         'user_id'
     ];
     protected $allowSort = [
@@ -24,12 +26,14 @@ class veterinary extends Model
         'email',
         'phone',
         'address',
+         'image_path',
         'user:id'
     ];  
     protected $fillable = [
         'name',
         'email',
         'phone',
+         'image_path',
         'address',
      'schedules' => 'array',
      'user_id'
@@ -61,6 +65,13 @@ class veterinary extends Model
     {
         return $this->morphMany(payment::class, 'payable');
 }
+
+// En el modelo Veterinary
+public function getImageUrlAttribute()
+{
+    return $this->image_path ? asset('storage/' . $this->image_path) : null;
+}
+
    protected function getAllowIncluded()
     {
         return collect(get_class_methods($this))

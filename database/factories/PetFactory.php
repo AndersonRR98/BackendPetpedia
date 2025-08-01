@@ -22,7 +22,7 @@ class PetFactory extends Factory
             'size' => $this->faker->randomFloat(2, 3.0, 40.0),
             'sex' => $this->faker->randomElement(['Macho', 'Hembra']),
             'description' => $this->faker->paragraph,
-            'image' => $this->faker->imageUrl,
+            'image' => 'pets/default.jpg', // Imagen almacenada en /storage/app/public/pets/
             'birth_date' => $this->faker->date(),
             'user_id' => User::inRandomOrder()->value('id'),
             'veterinary_id' => veterinary::inRandomOrder()->value('id'),

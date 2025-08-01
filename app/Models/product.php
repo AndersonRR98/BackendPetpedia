@@ -17,7 +17,7 @@ class product extends Model
         'name',
         'description',
         'price',
-        'image',
+        'image_path',
         'category_id',
         'veterinary_id',
         'shoppingcar_id',
@@ -27,7 +27,7 @@ class product extends Model
         'name',
         'description',
         'price',
-        'image',
+         'image_path',
         'category_id',
         'veterinary_id',
         'shoppingcar_id',
@@ -61,7 +61,12 @@ class product extends Model
     {
         return $this->hasMany(inventory::class);
     }
-    
+    // En el modelo Veterinary
+public function getImageUrlAttribute()
+{
+    return $this->image_path ? asset('storage/' . $this->image_path) : null;
+}
+
   protected function getAllowIncluded()
     {
         return collect(get_class_methods($this))

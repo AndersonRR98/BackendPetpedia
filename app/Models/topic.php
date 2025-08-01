@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 class topic extends Model
 { 
+    use HasFactory;
     protected $allowfilter = [
         'id',
         'title',

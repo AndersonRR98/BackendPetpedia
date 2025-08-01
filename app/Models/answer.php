@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 
 class answer extends Model
 {  
+    use HasFactory;
     protected $allowFilter = [
         'id',
     'content',

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name'); // Name of the product
             $table->text('description'); // Description of the product
             $table->decimal('price', 10, 2);
-            $table->string('image')->nullable();
+             $table->string('image')->nullable(); // Guarda la ruta de la imagen
             $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('cascade');
            $table->foreignId('veterinary_id')->nullable()->constrained('veterinaries')->onDelete('cascade');
            $table->foreignId('shoppingcar_id')->nullable()->constrained('shoppingcars')->onDelete('cascade');

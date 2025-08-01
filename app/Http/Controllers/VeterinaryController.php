@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Veterinary;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class VeterinaryController extends Controller
 {
@@ -21,11 +22,19 @@ class VeterinaryController extends Controller
             'phone' => 'required|string',
             'address' => 'required|string',
             'schedules' => 'required|array',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'user_id' => 'nullable|exists:users,id',
         ]);
 
-        $vet = Veterinary::create($request->all());
-        return response()->json($vet, 201);
+        $data = $request->only(['name', 'email', 'phone', 'address', 'schedules', 'user_id']);
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('veterinaries', 'public');
+            $data['image_path'] = $path;
+        }
+
+        $veterinary = Veterinary::create($data);
+        return response()->json($veterinary, 201);
     }
 
     public function show($id)
@@ -41,16 +50,34 @@ class VeterinaryController extends Controller
             'email' => 'sometimes|email|unique:veterinaries,email,' . $veterinary->id,
             'phone' => 'sometimes|string',
             'address' => 'sometimes|string',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'schedules' => 'sometimes|array',
             'user_id' => 'nullable|exists:users,id',
         ]);
 
-        $veterinary->update($request->all());
+        $data = $request->only(['name', 'email', 'phone', 'address', 'schedules', 'user_id']);
+
+        if ($request->hasFile('image')) {
+            // Borra imagen anterior si existe
+            if ($veterinary->image_path) {
+                Storage::disk('public')->delete($veterinary->image_path);
+            }
+
+            $path = $request->file('image')->store('veterinaries', 'public');
+            $data['image_path'] = $path;
+        }
+
+        $veterinary->update($data);
         return response()->json($veterinary);
     }
 
     public function destroy(Veterinary $veterinary)
     {
+        // Borra imagen si existe
+        if ($veterinary->image_path) {
+            Storage::disk('public')->delete($veterinary->image_path);
+        }
+
         $veterinary->delete();
         return response()->json(['message' => 'Eliminado con éxito']);
     }

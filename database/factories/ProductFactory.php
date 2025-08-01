@@ -18,7 +18,7 @@ class ProductFactory extends Factory
             'name'           => $this->faker->word(),
             'description'    => $this->faker->sentence(),
             'price'          => $this->faker->randomFloat(2, 5, 500),
-            'image'          => $this->faker->imageUrl(),
+           'image' => 'pets/default.jpg', 
             'category_id'    => Category::factory(),
             'veterinary_id'  => Veterinary::factory(),
             'shoppingcar_id' => Shoppingcar::factory(),

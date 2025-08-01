@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 
 class pet extends Model
 {
+    use hasfactory;
     protected $allowFilter = [
         'id',
         'name',
@@ -19,7 +20,7 @@ class pet extends Model
         'size', 
         'sex',
         'description',
-        'image',
+      'image_path',
         'birth_date',
         'shelter_id',
         'user_id',
@@ -34,7 +35,7 @@ class pet extends Model
         'size',     
         'sex',
         'description',
-        'image',
+      'image_path',
         'birth_date',
         'shelter_id',
         'user_id',
@@ -48,7 +49,7 @@ class pet extends Model
         'size',
         'sex',
         'description',
-        'image',
+         'image_path',
         'birth_date',
         'shelter_id',
         'user_id',
@@ -65,6 +66,11 @@ class pet extends Model
     public function veterinary():BelongsTo
     {
         return $this->belongsTo(Veterinary::class);
+}
+// En el modelo Veterinary
+public function getImageUrlAttribute()
+{
+    return $this->image_path ? asset('storage/' . $this->image_path) : null;
 }
 
      protected function getAllowIncluded()

@@ -13,6 +13,7 @@ class VeterinaryFactory extends Factory
             'email' => $this->faker->unique()->safeEmail,
             'phone' => $this->faker->phoneNumber,
             'address' => $this->faker->address,
+           'image' => 'pets/default.jpg', 
             'schedules' => json_encode(['08:00-17:00', '08:00-17:00', '08:00-17:00']),
              'user_id' => User::inRandomOrder()->first()?->id,
         ];

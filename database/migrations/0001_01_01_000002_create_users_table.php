@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+             $table->string('image')->nullable(); // Guarda la ruta de la imagen
             //se hace la foranea de la tabla con perfiles es una tabla polimorfica la cual se escoge su rol y se conecta automaticamente
             $table->foreignId('role_id')->nullable()->constrained('roles')->onDelete('set null');
             $table->rememberToken();

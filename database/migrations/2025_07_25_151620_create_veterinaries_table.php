@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('veterinaries', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+             $table->string('image')->nullable(); // Guarda la ruta de la imagen
             $table->string('email');
             $table->string('phone');
             $table->string('address');

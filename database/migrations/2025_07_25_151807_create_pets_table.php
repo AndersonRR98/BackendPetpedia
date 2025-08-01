@@ -20,7 +20,7 @@ return new class extends Migration
             $table->decimal('size', 8, 2)->nullable();
         $table->string('sex');
         $table->text('description');
-            $table->string('image')->nullable();
+            $table->string('image')->nullable(); // Guarda la ruta de la imagen
             $table->date('birth_date')->nullable(); 
             $table ->foreignId('shelter_id')->nullable()->contrained('shelters')->ondelete('set null');
            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
