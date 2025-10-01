@@ -9,7 +9,8 @@ class AdoptionController extends Controller
 {
     public function index()
     {
-        $adoptions = Adoption::included()->filter()->sort()->getOrPaginate();
+        $adoptions = Adoption::with(['pet'])
+       -> included()->filter()->sort()->getOrPaginate();
         return response()->json($adoptions);
     }
 

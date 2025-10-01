@@ -6,8 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
-
-
 Route::apiResource('answers', answerController::class);
 Route::apiResource('averages', averageController::class);
 Route::apiResource('trainers', trainerController::class);
