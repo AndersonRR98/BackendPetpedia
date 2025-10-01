@@ -72,6 +72,10 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsTo(trainer::class);
     }
+     public function profile()
+    {
+        return $this->hasOne(Profile::class);
+    }
 
     
 public function forums():HasMany

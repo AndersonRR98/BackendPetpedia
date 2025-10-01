@@ -19,7 +19,11 @@ return new class extends Migration
             $table->text('qualifications'); // Assuming qualifications is a text field
             $table->string('phone');
             $table->string('email')->unique();
-            $table->text('biography'); // Assuming biography is a text field
+            $table->text('biography');
+            $table->decimal('rating');
+            $table->string('image')->nullable(); // Guarda la ruta de la imagen
+            
+            // Assuming biography is a text field
             $table->timestamps();
         });
     }

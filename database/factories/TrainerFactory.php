@@ -16,6 +16,10 @@ class TrainerFactory extends Factory
             'phone' => $this->faker->phoneNumber,
             'email' => $this->faker->unique()->safeEmail,
             'biography' => $this->faker->paragraph,
+            'rating' => $this->faker->randomFloat(1, 3.0, 5.0), 
+           'image' => 'pets/default.jpg', // Imagen almacenada en /storage/app/public/pets/
+
+
         ];
     }
 }

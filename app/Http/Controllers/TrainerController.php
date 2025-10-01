@@ -25,6 +25,12 @@ class TrainerController extends Controller
             'biography' => 'required|string',
             'user_id' => 'nullable|exists:users,id',
         ]);
+          $data = $request->only(['name', 'specialty', 'experience', 'qualifications', 'phone', 'email','biography','user_id']);
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('trainers', 'public');
+            $data['image_path'] = $path;
+        }
 
         $trainer = Trainer::create($request->all());
         return response()->json($trainer, 201);
@@ -48,6 +54,18 @@ class TrainerController extends Controller
             'biography' => 'sometimes|string',
             'user_id' => 'nullable|exists:users,id',
         ]);
+          $data = $request->only(['name', 'specialty', 'experience', 'qualifications', 'phone', 'email','biography','user_id']);
+
+        if ($request->hasFile('image')) {
+            // Borra imagen anterior si existe
+            if ($trainer->image_path) {
+                Storage::disk('public')->delete($trainer->image_path);
+            }
+
+            $path = $request->file('image')->store('trainers', 'public');
+            $data['image_path'] = $path;
+        }
+
 
         $trainer->update($request->all());
         return response()->json($trainer);

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->decimal('cost');
             $table->string('shipping_method');
             $table->enum('status', ['pending', 'shipped', 'delivered', 'cancelled']);
-          $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
+            $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
             $table->timestamps();
         });
     }

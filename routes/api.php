@@ -23,7 +23,7 @@ Route::apiResource('shipments', shipmentController::class);
 Route::apiResource('categories', categoryController::class);
 Route::apiResource('products', productController::class);
 Route::apiResource('inventories', inventoryController::class);
-Route::apiResource('orderitmes', orderitemController::class);
+Route::apiResource('orderitems', orderitemController::class);
 Route::apiResource('payments', paymentController::class);
 Route::apiResource('paymentmethos', paymentmethoController::class);
 Route::apiResource('users', UserController::class);

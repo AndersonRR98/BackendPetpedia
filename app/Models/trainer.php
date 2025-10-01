@@ -42,6 +42,8 @@ protected $allowFilter = [
         'phone',
         'email',
         'biography',
+        'rating',
+        'image',
         'user_id'
     ];
     public function users():HasOne
