@@ -13,30 +13,31 @@ return new class extends Migration
     {
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
-             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            
-            // Imagen de perfil
-            $table->string('image')->nullable();
-            
-            // Campos para VETERINARIO (role_id = 1)
-            $table->string('clinic_name')->nullable()->comment('Nombre de la clínica veterinaria');
-            $table->text('address')->nullable()->comment('Dirección de la clínica o consultorio');
-            $table->string('phone')->nullable()->comment('Teléfono de contacto');
-            $table->json('schedules')->nullable()->comment('Horarios de atención en formato JSON');
-            
-            // Campos para ENTRENADOR (role_id = 2)
-            $table->string('specialty')->nullable()->comment('Especialidad del entrenador');
-            $table->integer('experience_years')->nullable()->comment('Años de experiencia');
-            $table->text('qualifications')->nullable()->comment('Certificaciones y cualificaciones');
-            
-            // Campos para REFUGIO (role_id = 4)
-            $table->string('responsible')->nullable()->comment('Persona responsable del refugio');
-            
-            // Timestamps
-            $table->timestamps();
-            
-            // Índices para mejor performance
-            $table->index('user_id');
+          // Relación con usuario
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+
+            // Foto de perfil
+            $table->string('photo')->nullable();
+
+            // Datos comunes
+            $table->string('phone')->nullable();
+            $table->string('address')->nullable();
+
+            // Campos específicos de Entrenador
+            $table->string('specialty')->nullable();
+            $table->integer('experience_years')->nullable();
+            $table->text('qualifications')->nullable();
+
+            // Campos específicos de Veterinario
+            $table->string('clinic_name')->nullable();
+            $table->json('schedules')->nullable(); // Guardamos horarios como array JSON
+
+            // Campos específicos de Refugio
+            $table->string('responsible')->nullable();
+
+            // Biografía (para Refugio o Veterinario si aplica)
+            $table->text('biography')->nullable();
+
             $table->timestamps();
         });
     }
