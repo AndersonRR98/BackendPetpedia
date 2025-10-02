@@ -28,31 +28,37 @@ Route::apiResource('payments', paymentController::class);
 Route::apiResource('paymentmethos', paymentmethoController::class);
 Route::apiResource('users', UserController::class);
 
-Route::prefix('auth')->group(function () {
-    Route::post('register', [AuthController::class, 'register']);
-    Route::post('login', [AuthController::class, 'login']);
-    Route::get('roles', [AuthController::class, 'getRoles']);
-    
-    Route::middleware('auth:api')->group(function () {
-        Route::get('me', [AuthController::class, 'me']);
-        Route::post('logout', [AuthController::class, 'logout']);
-        Route::post('refresh', [AuthController::class, 'refresh']);
+Route::post('/auth/register', [AuthController::class, 'register']);
+Route::post('/auth/login', [AuthController::class, 'login']);
+Route::get('/auth/roles', [AuthController::class, 'getRoles']);
+
+Route::middleware('auth:api')->group(function () {
+    Route::get('/auth/me', [AuthController::class, 'me']);
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::post('/auth/refresh', [AuthController::class, 'refresh']);
+
+    // Rutas por rol
+    Route::middleware('role:1')->group(function () {
+        Route::get('/veterinarian/dashboard', function () {
+            return response()->json(['message' => 'Dashboard Veterinario']);
+        });
     });
-});
 
-// Rutas protegidas por roles
-Route::middleware(['auth:api', 'role:1'])->group(function () {
-    // Rutas solo para veterinarios
-});
+    Route::middleware('role:2')->group(function () {
+        Route::get('/trainer/dashboard', function () {
+            return response()->json(['message' => 'Dashboard Entrenador']);
+        });
+    });
 
-Route::middleware(['auth:api', 'role:2'])->group(function () {
-    // Rutas solo para entrenadores
-});
+    Route::middleware('role:3')->group(function () {
+        Route::get('/client/dashboard', function () {
+            return response()->json(['message' => 'Dashboard Cliente']);
+        });
+    });
 
-Route::middleware(['auth:api', 'role:4'])->group(function () {
-    // Rutas solo para refugios
-});
-
-Route::middleware(['auth:api', 'role:5'])->group(function () {
-    // Rutas solo para administradores
+    Route::middleware('role:4')->group(function () {
+        Route::get('/shelter/dashboard', function () {
+            return response()->json(['message' => 'Dashboard Refugio']);
+        });
+    });
 });

@@ -18,36 +18,25 @@ class AuthController extends Controller
             'name' => 'required|string|min:2|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
-            'role_id' => ['required', Rule::in([1, 2, 3, 4])], // 1:Vet, 2:Trainer, 3:Client, 4:Shelter
-
-            // Datos comunes
+            'role_id' => ['required', Rule::in([1, 2, 3, 4])],
             'phone' => 'required|string|max:20',
             'address' => 'required|string',
-            'biography' => 'nullable|string',
 
-            // Veterinario específico
+            // Veterinario
             'clinic_name' => 'required_if:role_id,1|string|max:255',
             'veterinary_license' => 'required_if:role_id,1|string|max:100',
             'specialization' => 'required_if:role_id,1|string|max:255',
-            'schedules' => 'nullable|array',
 
-            // Entrenador específico
+            // Entrenador
             'specialty' => 'required_if:role_id,2|string|max:255',
             'experience_years' => 'required_if:role_id,2|integer|min:0',
             'qualifications' => 'required_if:role_id,2|string',
             'hourly_rate' => 'required_if:role_id,2|numeric|min:0',
 
-            // Refugio específico
+            // Refugio
             'shelter_name' => 'required_if:role_id,4|string|max:255',
             'responsible_person' => 'required_if:role_id,4|string|max:255',
             'capacity' => 'required_if:role_id,4|integer|min:1',
-
-            // Cliente específico
-            'pet_preferences' => 'nullable|string|max:255',
-            'emergency_contact' => 'nullable|string|max:20',
-
-            // Imagen
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -69,16 +58,9 @@ class AuthController extends Controller
                 'role_id' => $request->role_id,
             ]);
 
-            // Subir foto si existe
-            $imagePath = null;
-            if ($request->hasFile('photo')) {
-                $imagePath = $request->file('photo')->store('profiles', 'public');
-            }
-
-            // Preparar datos del perfil según el rol
+            // Preparar perfil
             $profileData = [
                 'user_id' => $user->id,
-                'photo' => $imagePath,
                 'phone' => $request->phone,
                 'address' => $request->address,
                 'biography' => $request->biography,
@@ -91,7 +73,7 @@ class AuthController extends Controller
                         'clinic_name' => $request->clinic_name,
                         'veterinary_license' => $request->veterinary_license,
                         'specialization' => $request->specialization,
-                        'schedules' => $request->schedules ? json_encode($request->schedules) : null,
+                        'schedules' => $request->schedules ? json_encode($request->schedules) : json_encode($this->getDefaultVetSchedule()),
                     ];
                     break;
 
@@ -111,18 +93,11 @@ class AuthController extends Controller
                         'capacity' => $request->capacity,
                     ];
                     break;
-
-                case 3: // Cliente
-                    $profileData += [
-                        'pet_preferences' => $request->pet_preferences,
-                        'emergency_contact' => $request->emergency_contact,
-                    ];
-                    break;
             }
 
             Profile::create($profileData);
 
-            // Generar token
+            // Token JWT
             $token = JWTAuth::fromUser($user);
 
             \DB::commit();
@@ -171,24 +146,23 @@ class AuthController extends Controller
                         ->where('email', $request->email)
                         ->firstOrFail();
 
-            if (!$user->is_active) {
-                return response()->json([
-                    'success' => false,
-                    'error' => 'Cuenta desactivada'
-                ], 401);
-            }
-
             return response()->json([
                 'success' => true,
                 'message' => 'Login exitoso',
                 'token' => $token,
-                'user' => $this->formatUserResponse($user),
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                    'profile' => $user->profile,
+                ]
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'error' => 'Error en el login: ' . $e->getMessage()
+                'error' => 'Error en el login'
             ], 500);
         }
     }
@@ -199,7 +173,7 @@ class AuthController extends Controller
             $user = JWTAuth::parseToken()->authenticate();
             return response()->json([
                 'success' => true,
-                'user' => $this->formatUserResponse($user->load(['profile', 'role']))
+                'user' => $user->load(['profile', 'role'])
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -225,27 +199,11 @@ class AuthController extends Controller
         }
     }
 
-    public function refresh()
-    {
-        try {
-            $newToken = JWTAuth::refresh(JWTAuth::getToken());
-            return response()->json([
-                'success' => true,
-                'token' => $newToken
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => 'No se pudo refrescar el token'
-            ], 401);
-        }
-    }
-
     public function getRoles()
     {
         $roles = \App\Models\Role::where('is_active', true)
-                                ->where('id', '!=', 5) // Excluir admin para registro público
-                                ->get(['id', 'name', 'description']);
+                                ->where('id', '!=', 5) // Excluir admin
+                                ->get(['id', 'name']);
 
         return response()->json([
             'success' => true,
@@ -253,18 +211,16 @@ class AuthController extends Controller
         ]);
     }
 
-    private function formatUserResponse($user)
+    private function getDefaultVetSchedule(): array
     {
         return [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'role' => [
-                'id' => $user->role->id,
-                'name' => $user->role->name,
-            ],
-            'profile' => $user->profile,
-            'email_verified_at' => $user->email_verified_at,
+            'lunes' => ['08:00-12:00', '14:00-18:00'],
+            'martes' => ['08:00-12:00', '14:00-18:00'],
+            'miercoles' => ['08:00-12:00'],
+            'jueves' => ['08:00-12:00', '14:00-18:00'],
+            'viernes' => ['08:00-12:00', '14:00-18:00'],
+            'sabado' => ['09:00-13:00'],
+            'domingo' => ['Cerrado']
         ];
     }
 }

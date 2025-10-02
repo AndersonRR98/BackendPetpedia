@@ -12,81 +12,50 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. VETERINARIOS - Datos específicos de veterinarios
-        $this->createVeterinarians();
-
-        // 2. ENTRENADORES - Datos específicos de entrenadores  
-        $this->createTrainers();
-
-        // 3. REFUGIOS - Datos específicos de refugios
-        $this->createShelters();
-
-        // 4. CLIENTES - Datos específicos de clientes
-        $this->createClients();
-
-        $this->command->info('✅ Usuarios y perfiles creados exitosamente!');
-        $this->showSummary();
-    }
-
-    private function createVeterinarians(): void
-    {
-        $veterinarians = [
+        // 1. VETERINARIOS con datos específicos
+        $vets = [
             [
-                'name' => 'Dr. Carlos Mendoza',
-                'email' => 'dr.mendoza@vetpedia.com',
+                'name' => 'Dr. Carlos Mendoza', 
+                'email' => 'carlos.vet@petpedia.com',
                 'profile' => [
                     'clinic_name' => 'Clínica Veterinaria Central',
                     'veterinary_license' => 'VET-12345',
                     'specialization' => 'Cirugía General',
                     'phone' => '+1-234-567-8901',
                     'address' => 'Av. Principal 123, Ciudad',
-                    'biography' => 'Cirujano veterinario con 10 años de experiencia en procedimientos complejos.',
+                    'biography' => 'Cirujano veterinario con 10 años de experiencia.',
                 ]
             ],
             [
                 'name' => 'Dra. Ana López',
-                'email' => 'dra.lopez@vetpedia.com', 
+                'email' => 'ana.vet@petpedia.com',
                 'profile' => [
-                    'clinic_name' => 'Hospital Animal San Francisco',
+                    'clinic_name' => 'Hospital Animal San Francisco', 
                     'veterinary_license' => 'VET-67890',
                     'specialization' => 'Dermatología',
                     'phone' => '+1-234-567-8902',
                     'address' => 'Calle Secundaria 456, Ciudad',
-                    'biography' => 'Especialista en dermatología animal y alergias.',
-                ]
-            ],
-            [
-                'name' => 'Dr. Roberto García',
-                'email' => 'dr.garcia@vetpedia.com',
-                'profile' => [
-                    'clinic_name' => 'Centro Veterinario Moderno',
-                    'veterinary_license' => 'VET-54321',
-                    'specialization' => 'Cardiología',
-                    'phone' => '+1-234-567-8903',
-                    'address' => 'Plaza Central 789, Ciudad',
-                    'biography' => 'Cardiólogo veterinario especializado en enfermedades cardíacas.',
+                    'biography' => 'Especialista en dermatología animal.',
                 ]
             ]
         ];
 
-        foreach ($veterinarians as $vetData) {
+        foreach ($vets as $vet) {
             $user = User::create([
-                'name' => $vetData['name'],
-                'email' => $vetData['email'],
+                'name' => $vet['name'],
+                'email' => $vet['email'],
                 'password' => Hash::make('password'),
-                'role_id' => 1, // Veterinario
+                'role_id' => 1,
                 'email_verified_at' => now(),
             ]);
 
-            Profile::create(array_merge($vetData['profile'], [
+            Profile::create(array_merge($vet['profile'], [
                 'user_id' => $user->id,
                 'schedules' => json_encode($this->getVetSchedule()),
             ]));
         }
-    }
 
-    private function createTrainers(): void
-    {
+        // 2. ENTRENADORES con datos específicos
         $trainers = [
             [
                 'name' => 'María González',
@@ -94,45 +63,30 @@ class UserSeeder extends Seeder
                 'profile' => [
                     'specialty' => 'Adiestramiento Canino',
                     'experience_years' => 8,
-                    'qualifications' => 'Certificación Internacional en Modificación de Conducta',
+                    'qualifications' => 'Certificación Internacional',
                     'hourly_rate' => 45.00,
-                    'phone' => '+1-234-567-8904',
+                    'phone' => '+1-234-567-8903',
                     'address' => 'Av. del Parque 321, Ciudad',
-                    'biography' => 'Entrenadora especializada en modificación de conducta canina.',
-                ]
-            ],
-            [
-                'name' => 'Javier Rodríguez',
-                'email' => 'javier.trainer@petpedia.com',
-                'profile' => [
-                    'specialty' => 'Agility y Obediencia',
-                    'experience_years' => 12,
-                    'qualifications' => 'Licenciatura en Etología Animal',
-                    'hourly_rate' => 55.00,
-                    'phone' => '+1-234-567-8905',
-                    'address' => 'Calle Deportiva 654, Ciudad',
-                    'biography' => 'Especialista en agility y entrenamiento deportivo canino.',
+                    'biography' => 'Entrenadora especializada en modificación de conducta.',
                 ]
             ]
         ];
 
-        foreach ($trainers as $trainerData) {
+        foreach ($trainers as $trainer) {
             $user = User::create([
-                'name' => $trainerData['name'],
-                'email' => $trainerData['email'],
+                'name' => $trainer['name'],
+                'email' => $trainer['email'],
                 'password' => Hash::make('password'),
-                'role_id' => 2, // Entrenador
+                'role_id' => 2,
                 'email_verified_at' => now(),
             ]);
 
-            Profile::create(array_merge($trainerData['profile'], [
+            Profile::create(array_merge($trainer['profile'], [
                 'user_id' => $user->id,
             ]));
         }
-    }
 
-    private function createShelters(): void
-    {
+        // 3. REFUGIOS con datos específicos
         $shelters = [
             [
                 'name' => 'Refugio Patitas Contentas',
@@ -141,81 +95,53 @@ class UserSeeder extends Seeder
                     'shelter_name' => 'Refugio Patitas Contentas',
                     'responsible_person' => 'Laura Martínez',
                     'capacity' => 50,
-                    'phone' => '+1-234-567-8906',
+                    'phone' => '+1-234-567-8904',
                     'address' => 'Camino Rural 987, Zona Norte',
-                    'biography' => 'Refugio dedicado al rescate y adopción de animales abandonados.',
-                ]
-            ],
-            [
-                'name' => 'Santuario Animal Esperanza',
-                'email' => 'contacto@esperanzaanimal.org',
-                'profile' => [
-                    'shelter_name' => 'Santuario Animal Esperanza',
-                    'responsible_person' => 'Carlos Ruiz',
-                    'capacity' => 75,
-                    'phone' => '+1-234-567-8907',
-                    'address' => 'Carretera Este 654, Área Rural',
-                    'biography' => 'Santuario que brinda hogar permanente a animales con necesidades especiales.',
+                    'biography' => 'Refugio dedicado al rescate de animales.',
                 ]
             ]
         ];
 
-        foreach ($shelters as $shelterData) {
+        foreach ($shelters as $shelter) {
             $user = User::create([
-                'name' => $shelterData['name'],
-                'email' => $shelterData['email'],
+                'name' => $shelter['name'],
+                'email' => $shelter['email'],
                 'password' => Hash::make('password'),
-                'role_id' => 4, // Refugio
+                'role_id' => 4,
                 'email_verified_at' => now(),
             ]);
 
-            Profile::create(array_merge($shelterData['profile'], [
+            Profile::create(array_merge($shelter['profile'], [
                 'user_id' => $user->id,
             ]));
         }
-    }
 
-    private function createClients(): void
-    {
+        // 4. CLIENTES
         $clients = [
             ['name' => 'Ana García', 'email' => 'ana.client@petpedia.com'],
             ['name' => 'Pedro López', 'email' => 'pedro.client@petpedia.com'],
-            ['name' => 'María Rodríguez', 'email' => 'maria.client@petpedia.com'],
-            ['name' => 'Carlos Martínez', 'email' => 'carlos.client@petpedia.com'],
-            ['name' => 'Laura Hernández', 'email' => 'laura.client@petpedia.com'],
         ];
 
-        $petPreferences = [
-            'Perros de raza pequeña', 'Gatos', 'Aves exóticas', 
-            'Reptiles', 'Animales de granja', 'Todo tipo de mascotas'
-        ];
-
-        $addresses = [
-            'Av. Central 123, Ciudad',
-            'Calle Norte 456, Ciudad', 
-            'Plaza Sur 789, Ciudad',
-            'Boulevard Este 321, Ciudad',
-            'Camino Oeste 654, Ciudad'
-        ];
-
-        foreach ($clients as $index => $clientData) {
+        foreach ($clients as $client) {
             $user = User::create([
-                'name' => $clientData['name'],
-                'email' => $clientData['email'],
+                'name' => $client['name'],
+                'email' => $client['email'],
                 'password' => Hash::make('password'),
-                'role_id' => 3, // Cliente
+                'role_id' => 3,
                 'email_verified_at' => now(),
             ]);
 
             Profile::create([
                 'user_id' => $user->id,
                 'phone' => '+1-234-567-89' . rand(10, 99),
-                'address' => $addresses[$index], // Usar array de direcciones predefinidas
-                'pet_preferences' => $petPreferences[array_rand($petPreferences)], // Selección aleatoria
+                'address' => 'Dirección de ' . $client['name'],
+                'pet_preferences' => 'Perros y gatos',
                 'emergency_contact' => '+1-234-567-0000',
-                'biography' => $clientData['name'] . ' es un amante de los animales y dueño responsable.',
+                'biography' => $client['name'] . ' - Amante de los animales.',
             ]);
         }
+
+        $this->command->info('✅ Usuarios creados con datos específicos por rol');
     }
 
     private function getVetSchedule(): array
@@ -229,23 +155,5 @@ class UserSeeder extends Seeder
             'sabado' => ['09:00-13:00'],
             'domingo' => ['Cerrado']
         ];
-    }
-
-    private function showSummary(): void
-    {
-        $counts = User::with('role')->get()->groupBy('role.name')->map->count();
-        
-        $this->command->info('📊 Resumen de usuarios creados:');
-        foreach ($counts as $role => $count) {
-            $this->command->info("   - {$count} {$role}");
-        }
-        $this->command->info("   Total: " . User::count() . " usuarios");
-        
-        // Verificar que los perfiles tengan datos correctos
-        $this->command->info('🔍 Verificación de perfiles:');
-        $this->command->info("   - Veterinarios con clínica: " . Profile::whereNotNull('clinic_name')->count());
-        $this->command->info("   - Entrenadores con especialidad: " . Profile::whereNotNull('specialty')->count());
-        $this->command->info("   - Refugios con nombre: " . Profile::whereNotNull('shelter_name')->count());
-        $this->command->info("   - Clientes con preferencias: " . Profile::whereNotNull('pet_preferences')->count());
     }
 }
