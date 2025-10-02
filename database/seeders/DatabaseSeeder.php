@@ -22,6 +22,11 @@ use App\Models\shoppingcar;
 use App\Models\trainer;
 use App\Models\User;
 use App\Models\veterinary;
+use App\Models\role;
+
+
+use App\Models\Profile;
+
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -33,7 +38,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
          $this->call([
-
+  
+    RoleSeeder::class,
    ForumSeeder::class,
      TopicSeeder::class,
      answerSeeder::class,
@@ -53,11 +59,12 @@ class DatabaseSeeder extends Seeder
      shipmentSeeder::class,
      categorySeeder::class,
      productSeeder::class,
-     inventorySeeder::class,
+     InventorySeeder::class,
      orderitemSeeder::class,
      paymentSeeder::class,
      paymentmethoSeeder::class,
-     roleseeder::class,
+     ProfileSeeder::class, // Solo crea perfiles para usuarios existentes
+
         ]);
     }
 }
