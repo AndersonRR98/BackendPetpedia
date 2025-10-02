@@ -63,7 +63,6 @@ class DatabaseSeeder extends Seeder
      orderitemSeeder::class,
      paymentSeeder::class,
      paymentmethoSeeder::class,
-     ProfileSeeder::class, // Solo crea perfiles para usuarios existentes
 
         ]);
     }

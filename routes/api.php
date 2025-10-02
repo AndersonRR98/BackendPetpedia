@@ -28,15 +28,31 @@ Route::apiResource('payments', paymentController::class);
 Route::apiResource('paymentmethos', paymentmethoController::class);
 Route::apiResource('users', UserController::class);
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/forgot-password', [PasswordResetLinkController::class, 'store']);
-Route::post('/reset-password', [NewPasswordController::class, 'store']);
-Route::get('/roles', [AuthController::class, 'getRoles']);
+Route::prefix('auth')->group(function () {
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('login', [AuthController::class, 'login']);
+    Route::get('roles', [AuthController::class, 'getRoles']);
+    
+    Route::middleware('auth:api')->group(function () {
+        Route::get('me', [AuthController::class, 'me']);
+        Route::post('logout', [AuthController::class, 'logout']);
+        Route::post('refresh', [AuthController::class, 'refresh']);
+    });
+});
 
-// Rutas protegidas con JWT
-Route::middleware('auth:api')->group(function () {
-    Route::get('/me', [AuthController::class, 'me']);
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/refresh', [AuthController::class, 'refresh']);
+// Rutas protegidas por roles
+Route::middleware(['auth:api', 'role:1'])->group(function () {
+    // Rutas solo para veterinarios
+});
+
+Route::middleware(['auth:api', 'role:2'])->group(function () {
+    // Rutas solo para entrenadores
+});
+
+Route::middleware(['auth:api', 'role:4'])->group(function () {
+    // Rutas solo para refugios
+});
+
+Route::middleware(['auth:api', 'role:5'])->group(function () {
+    // Rutas solo para administradores
 });

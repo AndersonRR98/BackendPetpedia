@@ -20,39 +20,34 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
             'role_id' => ['required', Rule::in([1, 2, 3, 4])], // 1:Vet, 2:Trainer, 3:Client, 4:Shelter
 
-            // Veterinario
+            // Datos comunes
+            'phone' => 'required|string|max:20',
+            'address' => 'required|string',
+            'biography' => 'nullable|string',
+
+            // Veterinario específico
             'clinic_name' => 'required_if:role_id,1|string|max:255',
-            'address' => 'required_if:role_id,1|string',
-            'phone' => 'required_if:role_id,1|string|max:20',
             'veterinary_license' => 'required_if:role_id,1|string|max:100',
             'specialization' => 'required_if:role_id,1|string|max:255',
-            'schedules' => 'sometimes|array',
+            'schedules' => 'nullable|array',
 
-            // Entrenador
+            // Entrenador específico
             'specialty' => 'required_if:role_id,2|string|max:255',
             'experience_years' => 'required_if:role_id,2|integer|min:0',
             'qualifications' => 'required_if:role_id,2|string',
-            'phone' => 'required_if:role_id,2|string|max:20',
             'hourly_rate' => 'required_if:role_id,2|numeric|min:0',
 
-            // Refugio
+            // Refugio específico
             'shelter_name' => 'required_if:role_id,4|string|max:255',
-            'address' => 'required_if:role_id,4|string',
-            'responsible' => 'required_if:role_id,4|string|max:255',
-            'phone' => 'required_if:role_id,4|string|max:20',
+            'responsible_person' => 'required_if:role_id,4|string|max:255',
             'capacity' => 'required_if:role_id,4|integer|min:1',
 
-            // Cliente
-            'phone' => 'required_if:role_id,3|string|max:20',
+            // Cliente específico
+            'pet_preferences' => 'nullable|string|max:255',
+            'emergency_contact' => 'nullable|string|max:20',
 
             // Imagen
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ], [
-            'role_id.in' => 'El rol seleccionado no es válido.',
-            'clinic_name.required_if' => 'El nombre de la clínica es requerido para veterinarios.',
-            'veterinary_license.required_if' => 'La licencia veterinaria es requerida.',
-            'specialty.required_if' => 'La especialidad es requerida para entrenadores.',
-            'shelter_name.required_if' => 'El nombre del refugio es requerido.',
         ]);
 
         if ($validator->fails()) {
@@ -80,7 +75,7 @@ class AuthController extends Controller
                 $imagePath = $request->file('photo')->store('profiles', 'public');
             }
 
-            // Preparar datos del perfil
+            // Preparar datos del perfil según el rol
             $profileData = [
                 'user_id' => $user->id,
                 'photo' => $imagePath,
@@ -112,8 +107,15 @@ class AuthController extends Controller
                 case 4: // Refugio
                     $profileData += [
                         'shelter_name' => $request->shelter_name,
-                        'responsible' => $request->responsible,
+                        'responsible_person' => $request->responsible_person,
                         'capacity' => $request->capacity,
+                    ];
+                    break;
+
+                case 3: // Cliente
+                    $profileData += [
+                        'pet_preferences' => $request->pet_preferences,
+                        'emergency_contact' => $request->emergency_contact,
                     ];
                     break;
             }
@@ -167,7 +169,7 @@ class AuthController extends Controller
 
             $user = User::with(['role', 'profile'])
                         ->where('email', $request->email)
-                        ->first();
+                        ->firstOrFail();
 
             if (!$user->is_active) {
                 return response()->json([
@@ -180,17 +182,7 @@ class AuthController extends Controller
                 'success' => true,
                 'message' => 'Login exitoso',
                 'token' => $token,
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'role' => [
-                        'id' => $user->role->id,
-                        'name' => $user->role->name,
-                    ],
-                    'profile' => $user->profile,
-                    'email_verified_at' => $user->email_verified_at,
-                ]
+                'user' => $this->formatUserResponse($user),
             ]);
 
         } catch (\Exception $e) {
@@ -207,7 +199,7 @@ class AuthController extends Controller
             $user = JWTAuth::parseToken()->authenticate();
             return response()->json([
                 'success' => true,
-                'user' => $user->load(['profile', 'role'])
+                'user' => $this->formatUserResponse($user->load(['profile', 'role']))
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -259,5 +251,20 @@ class AuthController extends Controller
             'success' => true,
             'roles' => $roles
         ]);
+    }
+
+    private function formatUserResponse($user)
+    {
+        return [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role' => [
+                'id' => $user->role->id,
+                'name' => $user->role->name,
+            ],
+            'profile' => $user->profile,
+            'email_verified_at' => $user->email_verified_at,
+        ];
     }
 }
