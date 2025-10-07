@@ -8,10 +8,14 @@ use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\User;
 use App\Models\Profile;
+use App\Models\Veterinaria;
+use App\Models\Entrenador;
+use App\Models\Refugio;
 use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
+    // -------------------- REGISTER --------------------
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -22,16 +26,16 @@ class AuthController extends Controller
             'phone' => 'required|string|max:20',
             'address' => 'required|string',
 
-            // Veterinario
-            'clinic_name' => 'required_if:role_id,1|string|max:255',
-            'veterinary_license' => 'required_if:role_id,1|string|max:100',
-            'specialization' => 'required_if:role_id,1|string|max:255',
+            // Veterinaria
+            'clinic_name' => 'required_if:role_id,2|string|max:255',
+            'veterinary_license' => 'required_if:role_id,2|string|max:100',
+            'specialization' => 'required_if:role_id,2|string|max:255',
 
             // Entrenador
-            'specialty' => 'required_if:role_id,2|string|max:255',
-            'experience_years' => 'required_if:role_id,2|integer|min:0',
-            'qualifications' => 'required_if:role_id,2|string',
-            'hourly_rate' => 'required_if:role_id,2|numeric|min:0',
+            'specialty' => 'required_if:role_id,3|string|max:255',
+            'experience_years' => 'required_if:role_id,3|integer|min:0',
+            'qualifications' => 'required_if:role_id,3|string',
+            'hourly_rate' => 'required_if:role_id,3|numeric|min:0',
 
             // Refugio
             'shelter_name' => 'required_if:role_id,4|string|max:255',
@@ -58,46 +62,47 @@ class AuthController extends Controller
                 'role_id' => $request->role_id,
             ]);
 
-            // Preparar perfil
-            $profileData = [
+            // Perfil común
+            $profile = Profile::create([
                 'user_id' => $user->id,
                 'phone' => $request->phone,
                 'address' => $request->address,
                 'biography' => $request->biography,
-            ];
+            ]);
 
-            // Datos específicos por rol
+            // Tabla específica por rol
             switch ($request->role_id) {
-                case 1: // Veterinario
-                    $profileData += [
+                case 2: // Veterinaria
+                    Veterinaria::create([
+                        'user_id' => $user->id,
                         'clinic_name' => $request->clinic_name,
                         'veterinary_license' => $request->veterinary_license,
                         'specialization' => $request->specialization,
                         'schedules' => $request->schedules ? json_encode($request->schedules) : json_encode($this->getDefaultVetSchedule()),
-                    ];
+                    ]);
                     break;
 
-                case 2: // Entrenador
-                    $profileData += [
+                case 3: // Entrenador
+                    Entrenador::create([
+                        'user_id' => $user->id,
                         'specialty' => $request->specialty,
                         'experience_years' => $request->experience_years,
                         'qualifications' => $request->qualifications,
                         'hourly_rate' => $request->hourly_rate,
-                    ];
+                    ]);
                     break;
 
                 case 4: // Refugio
-                    $profileData += [
+                    Refugio::create([
+                        'user_id' => $user->id,
                         'shelter_name' => $request->shelter_name,
                         'responsible_person' => $request->responsible_person,
                         'capacity' => $request->capacity,
-                    ];
+                    ]);
                     break;
             }
 
-            Profile::create($profileData);
-
-            // Token JWT
+            // Generar token
             $token = JWTAuth::fromUser($user);
 
             \DB::commit();
@@ -118,99 +123,60 @@ class AuthController extends Controller
         }
     }
 
+    // -------------------- LOGIN --------------------
     public function login(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required|string',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         $credentials = $request->only('email', 'password');
 
-        try {
-            if (!$token = JWTAuth::attempt($credentials)) {
-                return response()->json([
-                    'success' => false,
-                    'error' => 'Credenciales inválidas'
-                ], 401);
-            }
-
-            $user = User::with(['role', 'profile'])
-                        ->where('email', $request->email)
-                        ->firstOrFail();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Login exitoso',
-                'token' => $token,
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'role' => $user->role,
-                    'profile' => $user->profile,
-                ]
-            ]);
-
-        } catch (\Exception $e) {
+        if (! $token = JWTAuth::attempt($credentials)) {
             return response()->json([
                 'success' => false,
-                'error' => 'Error en el login'
-            ], 500);
-        }
-    }
-
-    public function me()
-    {
-        try {
-            $user = JWTAuth::parseToken()->authenticate();
-            return response()->json([
-                'success' => true,
-                'user' => $user->load(['profile', 'role'])
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => 'Usuario no autenticado'
+                'message' => 'Credenciales inválidas'
             ], 401);
         }
-    }
-
-    public function logout()
-    {
-        try {
-            JWTAuth::invalidate(JWTAuth::getToken());
-            return response()->json([
-                'success' => true,
-                'message' => 'Sesión cerrada correctamente'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => 'Error al cerrar sesión'
-            ], 500);
-        }
-    }
-
-    public function getRoles()
-    {
-        $roles = \App\Models\Role::where('is_active', true)
-                                ->where('id', '!=', 5) // Excluir admin
-                                ->get(['id', 'name']);
 
         return response()->json([
             'success' => true,
-            'roles' => $roles
+            'token' => $token,
+            'user' => auth()->user()->load('profile', 'role'),
         ]);
     }
 
+    // -------------------- PERFIL USUARIO --------------------
+    public function me()
+    {
+        return response()->json(auth()->user()->load('profile', 'role'));
+    }
+
+    // -------------------- LOGOUT --------------------
+    public function logout()
+    {
+        auth()->logout();
+        return response()->json(['message' => 'Sesión cerrada correctamente']);
+    }
+
+    // -------------------- REFRESH TOKEN --------------------
+    public function refresh()
+    {
+        return response()->json([
+            'access_token' => auth()->refresh(),
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60
+        ]);
+    }
+
+    // -------------------- LISTA DE ROLES --------------------
+    public function getRoles()
+    {
+        return response()->json([
+            ['id' => 1, 'name' => 'Cliente'],
+            ['id' => 2, 'name' => 'Veterinaria'],
+            ['id' => 3, 'name' => 'Entrenador'],
+            ['id' => 4, 'name' => 'Refugio'],
+        ]);
+    }
+
+    // Horarios por defecto veterinaria
     private function getDefaultVetSchedule(): array
     {
         return [

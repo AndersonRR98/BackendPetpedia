@@ -84,7 +84,7 @@ public function forums():HasMany
 }
 public function role():BelongsTo
 {
-    return $this->belongsTo(role::class);
+    return $this->belongsTo(role::class,'role_id');
 }
 public function orders():HasMany
 {
