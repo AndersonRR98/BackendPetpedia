@@ -13,15 +13,16 @@ return new class extends Migration
     {
         Schema::create('trainers', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
             $table->string('specialty');
-            $table->integer('experience'); // Assuming experience is in years
-            $table->text('qualifications'); // Assuming qualifications is a text field
-            $table->string('phone');
-            $table->string('email')->unique();
-            $table->text('biography');
-            $table->decimal('rating');
-            $table->string('image')->nullable(); // Guarda la ruta de la imagen
+            $table->integer('experience_years'); // años de experiencia
+            $table->text('qualifications')->nullable();
+            $table->decimal('hourly_rate', 8, 2)->default(0);
+            $table->decimal('rating', 3, 2)->default(0); // de 0 a 5
+            $table->integer('review_count')->default(0);
+            $table->string('image')->nullable();
+
+            $table->foreignId('user_id')->constrained('users')->ondelete('set null');
+
             
             // Assuming biography is a text field
             $table->timestamps();

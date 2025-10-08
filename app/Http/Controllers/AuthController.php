@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\User;
 use App\Models\Profile;
-use App\Models\Veterinaria;
-use App\Models\Entrenador;
-use App\Models\Refugio;
+use App\Models\Veterinary;
+use App\Models\Trainer;   // ✅ corregido: antes Entrenador
+use App\Models\Shelter;   // ✅ corregido: antes Refugio
 use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
@@ -63,7 +63,7 @@ class AuthController extends Controller
             ]);
 
             // Perfil común
-            $profile = Profile::create([
+            Profile::create([
                 'user_id' => $user->id,
                 'phone' => $request->phone,
                 'address' => $request->address,
@@ -73,33 +73,41 @@ class AuthController extends Controller
             // Tabla específica por rol
             switch ($request->role_id) {
                 case 2: // Veterinaria
-                    Veterinaria::create([
+                    Veterinary::create([
                         'user_id' => $user->id,
                         'clinic_name' => $request->clinic_name,
                         'veterinary_license' => $request->veterinary_license,
                         'specialization' => $request->specialization,
                         'schedules' => $request->schedules ? json_encode($request->schedules) : json_encode($this->getDefaultVetSchedule()),
+                       'image' => $request->image ?? 'pets/default.jpg', // si no manda imagen, usa default
+
                     ]);
                     break;
 
                 case 3: // Entrenador
-                    Entrenador::create([
+                    Trainer::create([ 
                         'user_id' => $user->id,
                         'specialty' => $request->specialty,
                         'experience_years' => $request->experience_years,
                         'qualifications' => $request->qualifications,
                         'hourly_rate' => $request->hourly_rate,
+                        'rating' => 0,
+                        'review_count' => 0,
+                       'image' => $request->image ?? 'pets/default.jpg', // si no manda imagen, usa default
                     ]);
                     break;
 
-                case 4: // Refugio
-                    Refugio::create([
-                        'user_id' => $user->id,
-                        'shelter_name' => $request->shelter_name,
-                        'responsible_person' => $request->responsible_person,
-                        'capacity' => $request->capacity,
-                    ]);
-                    break;
+              case 4: // Refugio
+                       Shelter::create([
+                       'user_id' => $user->id,
+                       'shelter_name' => $request->shelter_name,
+                       'responsible_person' => $request->responsible_person,
+                       'capacity' => $request->capacity,
+                       'rating' => 0, // valor por defecto
+                       'review_count' => 0, // valor por defecto
+                       'image' => $request->image ?? 'pets/default.jpg', // si no manda imagen, usa default
+                     ]);
+                     break;
             }
 
             // Generar token

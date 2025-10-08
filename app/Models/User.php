@@ -46,8 +46,8 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
-         'image_path',
         'role_id',
+        'is_active'
     ];
     // estas son las jwt los token de seguridad para la pagina 
       public function getJWTIdentifier() {

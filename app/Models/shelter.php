@@ -32,11 +32,12 @@ class shelter extends Model
         'user_id'
     ];
     protected $fillable = [
-        'name',
-        'phone',
-        'email',
-        'address',
-        'responsible',
+        'shelter_name',
+        'responsible_person',
+         'capacity',
+         'rating',
+         'review_count',
+         'image',
         'user_id'
     ];
     public function users():HasOne

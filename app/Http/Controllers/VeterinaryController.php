@@ -17,7 +17,7 @@ class VeterinaryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string',
+            'clinic_name' => 'required|string',
             'email' => 'required|email|unique:veterinaries,email',
             'phone' => 'required|string',
             'address' => 'required|string',
@@ -46,7 +46,7 @@ class VeterinaryController extends Controller
     public function update(Request $request, Veterinary $veterinary)
     {
         $request->validate([
-            'name' => 'sometimes|string',
+            'clinic_name' => 'sometimes|string',
             'email' => 'sometimes|email|unique:veterinaries,email,' . $veterinary->id,
             'phone' => 'sometimes|string',
             'address' => 'sometimes|string',

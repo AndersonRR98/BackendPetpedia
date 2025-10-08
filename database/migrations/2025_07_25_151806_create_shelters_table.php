@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('shelters', function (Blueprint $table) {
             $table->id();
-            $table->string('name');         
-            $table->string('phone')->nullable();
-            $table->string('email')->nullable();
-            $table->text('address')->nullable();
-            $table->text('responsible')->nullable();
+            $table->string('shelter_name');
+            $table->string('responsible_person');
+            $table->integer('capacity');
+            $table->decimal('rating', 3, 2)->default(0);
+            $table->integer('review_count')->default(0);
+            $table->string('image')->nullable();
+             $table->foreignId('user_id')->constrained('users')->ondelete('set null');
             $table->timestamps();
         });
     }

@@ -14,12 +14,12 @@ class veterinary extends Model
 {
     use HasFactory;
    protected $allowFilter = [
-        'name',
-        'email',
-        'phone',
-        'address',
-         'image_path',
-        'user_id'
+        'clinic_name',
+        'image',
+        'specialization',
+        'veterinary_license',
+        'schedules',
+        'user_id',
     ];
     protected $allowSort = [
         'name',
@@ -30,13 +30,12 @@ class veterinary extends Model
         'user:id'
     ];  
     protected $fillable = [
-        'name',
-        'email',
-        'phone',
-         'image_path',
-        'address',
-     'schedules' => 'array',
-     'user_id'
+         'clinic_name',
+        'image',
+        'specialization',
+        'veterinary_license',
+        'schedules',
+        'user_id'
     ];
     public function users():HasOne
     {

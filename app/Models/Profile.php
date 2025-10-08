@@ -13,22 +13,14 @@ class Profile extends Model
 
     protected $fillable = [
         'user_id',
-        'image',
-        'clinic_name',
-        'address',
         'phone',
-        'schedules',
-        'specialty',
-        'experience_years',
-        'qualifications',
-        'responsible',
+        'biography',
+        'address',
+        'photo',
+        
     ];
 
-    protected $casts = [
-        'schedules' => 'array',
-        'experience_years' => 'integer',
-    ];
-
+   
     public function user()
     {
         return $this->belongsTo(User::class);

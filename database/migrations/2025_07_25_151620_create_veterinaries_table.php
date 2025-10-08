@@ -13,12 +13,11 @@ return new class extends Migration
     {
         Schema::create('veterinaries', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-             $table->string('image')->nullable(); // Guarda la ruta de la imagen
-            $table->string('email');
-            $table->string('phone');
-            $table->string('address');
-            $table->json('schedules'); // Assuming schedules is a JSON field
+            $table->string('clinic_name');
+            $table->string('image')->nullable(); // Guarda la ruta de la imagen
+            $table->string('specialization');
+            $table->string('veterinary_license');
+            $table->json('schedules')->nullable();
             $table->foreignId('user_id')->constrained('users')->ondelete('set null');
             $table->timestamps();
         });

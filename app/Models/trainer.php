@@ -35,14 +35,12 @@ protected $allowFilter = [
         'user_id'
     ];
     protected $fillable = [
-        'name',
         'specialty',
-        'experience',
+        'experience_years',
         'qualifications',
-        'phone',
-        'email',
-        'biography',
+        'hourly_rate',
         'rating',
+        'review_count',
         'image',
         'user_id'
     ];
