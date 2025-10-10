@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
+/**
+ * @mixin IdeHelperrequestt
+ */
 class requestt extends Model
 {
     /** @use HasFactory<\Database\Factories\RequesttFactory> */

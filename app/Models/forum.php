@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+/**
+ * @mixin IdeHelperforum
+ */
 class forum extends Model
 { 
     use HasFactory;

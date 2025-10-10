@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+/**
+ * @mixin IdeHelperappointment
+ */
 class appointment extends Model
 {
     /** @use HasFactory<\Database\Factories\AppointmentFactory> */

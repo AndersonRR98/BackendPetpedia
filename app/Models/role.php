@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * @mixin IdeHelperrole
+ */
 class role extends Model
 {
     /** @use HasFactory<\Database\Factories\RoleFactory> */

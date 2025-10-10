@@ -8,6 +8,9 @@ use Illuminate\Support\Str;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @mixin IdeHelperAverage
+ */
 class Average extends Model
 {
     use HasFactory;

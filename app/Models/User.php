@@ -15,6 +15,9 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Str;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
+/**
+ * @mixin IdeHelperUser
+ */
 class User extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */

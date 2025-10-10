@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+/**
+ * @mixin IdeHelpercategory
+ */
 class category extends Model
 {
     /** @use HasFactory<\Database\Factories\CategoryFactory> */

@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
+/**
+ * @mixin IdeHelpernotification
+ */
 class notification extends Model
 {
     /** @use HasFactory<\Database\Factories\NotificationFactory> */

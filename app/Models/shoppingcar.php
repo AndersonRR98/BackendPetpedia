@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+/**
+ * @mixin IdeHelpershoppingcar
+ */
 class shoppingcar extends Model
 {
     /** @use HasFactory<\Database\Factories\ShoppingcarFactory> */
