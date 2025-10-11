@@ -26,11 +26,20 @@ class forum extends Model
         'creation_date',
         'user_id',
     ];
-       protected $fillable = [
+          protected $fillable = [
         'title',
         'description',
+        'content',
+        'image',
+        'likes_count',
+        'comments_count',
+        'comments',
         'creation_date',
-        'user_id',
+        'user_id'
+    ];
+       protected $casts = [
+        'creation_date' => 'datetime',
+        'comments' => 'array',
     ];
     public function user():BelongsTo
     {
@@ -39,6 +48,41 @@ class forum extends Model
     public function topics():HasMany
     {
         return $this->hasmany(topic::class);
+    }
+    public function addComment($userId, $userName, $content)
+    {
+        $comments = $this->comments ?? [];
+        
+        $newComment = [
+            'id' => count($comments) + 1,
+            'user_id' => $userId,
+            'user_name' => $userName,
+            'content' => $content,
+            'created_at' => now()->toDateTimeString()
+        ];
+        
+        $comments[] = $newComment;
+        
+        $this->update([
+            'comments' => $comments,
+            'comments_count' => count($comments)
+        ]);
+        
+        return $newComment;
+    }
+
+    // Método para dar like
+    public function incrementLikes()
+    {
+        $this->increment('likes_count');
+    }
+
+    // Método para quitar like
+    public function decrementLikes()
+    {
+        if ($this->likes_count > 0) {
+            $this->decrement('likes_count');
+        }
     }
 
      protected function getAllowIncluded()

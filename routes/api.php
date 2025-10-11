@@ -14,6 +14,7 @@ Route::apiResource('shelters', shelterController::class);
 Route::apiResource('pets', petController::class);
 Route::apiResource('adoptions', adoptionController::class);
 Route::apiResource('appointments', appointmentController::class);
+Route::apiResource('forums', ForumController::class);
 Route::apiResource('notifications', notificationController::class);
 Route::apiResource('requestts', requesttController::class);
 Route::apiResource('services', serviceController::class);
@@ -57,4 +58,16 @@ Route::middleware(['auth:api'])->group(function () {
     Route::middleware('role:4')->get('/shelter/dashboard', function () {
         return response()->json(['message' => 'Dashboard Refugio']);
     });
+
+    Route::post('/forums', [ForumController::class, 'store']);
+    Route::post('/forums/{forum}/comments', [ForumController::class, 'addComment']);
+    Route::post('/forums/{forum}/like', [ForumController::class, 'toggleLike']);
+    Route::delete('/forums/{forum}', [ForumController::class, 'destroy']);
+
+    Route::get('orders', [OrderController::class, 'index']); // Solo pedidos del usuario autenticado
+    Route::get('orders/user/{userId}', [OrderController::class, 'getByUser']); // Para casos específicos
+    Route::post('orders', [OrderController::class, 'store']);
+
+     Route::post('/appointments', [AppointmentController::class, 'store']);
+    Route::get('/user/appointments', [AppointmentController::class, 'getUserAppointments']);
 });
