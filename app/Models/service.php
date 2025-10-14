@@ -43,6 +43,12 @@ class service extends Model
         'requestt_id',
         'veterinary_id',
     ];
+        protected $casts = [
+        'price' => 'decimal:2',
+        'trainer_id' => 'integer',
+        'requestt_id' => 'integer',
+        'veterinary_id' => 'integer'
+    ];
     public function trainer():BelongsTo
     {
         return $this->belongsTo(Trainer::class);

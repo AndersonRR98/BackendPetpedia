@@ -19,6 +19,7 @@ class requestt extends Model
         'date',
         'priority',
         'application_status',
+        'trainer_id',
         'adoption_id',
         'user_id',
     ];
@@ -27,6 +28,7 @@ class requestt extends Model
         'date',
         'priority',
         'application_status',
+        'trainer_id',
         'adoption_id',
         'user_id',
     ];
@@ -34,6 +36,7 @@ class requestt extends Model
         'date',
         'priority',
         'application_status',
+        'trainer_id',
         'adoption_id',
         'user_id',
     ];

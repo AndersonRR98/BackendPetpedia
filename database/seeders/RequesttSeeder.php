@@ -14,6 +14,7 @@ class RequesttSeeder extends Seeder
             [
                 'priority' => 'high',
                 'application_status' => 'accepted',
+                'trainer_id' => 1,
                 'adoption_id' => 1,
                 'user_id' => 2,
                 'created_at' => now(),
@@ -22,6 +23,7 @@ class RequesttSeeder extends Seeder
             [
                 'priority' => 'medium',
                 'application_status' => 'finished',
+                'trainer_id' => 1,
                 'adoption_id' => 2,
                 'user_id' => 3,
                 'created_at' => now()->subDays(7),
@@ -30,6 +32,7 @@ class RequesttSeeder extends Seeder
             [
                 'priority' => 'urgent',
                 'application_status' => 'accepted',
+                'trainer_id' => 1,
                 'adoption_id' => null,
                 'user_id' => 1,
                 'created_at' => now(),

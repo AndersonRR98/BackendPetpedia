@@ -17,9 +17,10 @@ class RequesttController extends Controller
     {
         $request->validate([
             'priority' => 'required|in:low,medium,high,urgent',
-            'application_status' => 'required|in:accepted,finished',
+            'application_status' => 'required|in:pending,accepted,rejected,finished',
             'adoption_id' => 'nullable|exists:adoptions,id',
             'user_id' => 'nullable|exists:users,id',
+            'trainer_id' => 'nullable|exists:trainers,id',
         ]);
 
         $requestt = Requestt::create($request->all());
@@ -36,9 +37,10 @@ class RequesttController extends Controller
     {
         $request->validate([
             'priority' => 'sometimes|in:low,medium,high,urgent',
-            'application_status' => 'sometimes|in:accepted,finished',
+            'application_status' => 'sometimes|in:pending,accepted,rejected,finished',
             'adoption_id' => 'nullable|exists:adoptions,id',
             'user_id' => 'nullable|exists:users,id',
+            'trainer_id' => 'nullable|exists:trainers,id',
         ]);
 
         $requestt->update($request->all());
@@ -49,5 +51,40 @@ class RequesttController extends Controller
     {
         $requestt->delete();
         return response()->json(['message' => 'Deleted successfully']);
+    }
+
+    public function getByTrainer($id)
+    {
+        $requests = Requestt::where('trainer_id', $id)->get();
+        return response()->json($requests, 200);
+    }
+
+    // ✅ AGREGAR ESTOS DOS MÉTODOS
+    public function accept($id)
+    {
+        $requestt = Requestt::findOrFail($id);
+        
+        $requestt->update([
+            'application_status' => 'accepted'
+        ]);
+
+        return response()->json([
+            'message' => 'Solicitud aceptada exitosamente',
+            'request' => $requestt
+        ], 200);
+    }
+
+    public function reject($id)
+    {
+        $requestt = Requestt::findOrFail($id);
+        
+        $requestt->update([
+            'application_status' => 'rejected'
+        ]);
+
+        return response()->json([
+            'message' => 'Solicitud rechazada',
+            'request' => $requestt
+        ], 200);
     }
 }
