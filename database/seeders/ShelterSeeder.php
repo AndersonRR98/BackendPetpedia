@@ -50,7 +50,7 @@ class ShelterSeeder extends Seeder
                 'rating' => 4.7,
                 'review_count' => 10,
                 'image' => 'shelters/default.jpg',
-                'user_id' => 20, // ✅ Corregido: Pedro Gómez (refugio)
+                'user_id' => 20, // ✅ Corregido: Pedro Gómez (refugio
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
