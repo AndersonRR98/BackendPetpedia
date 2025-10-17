@@ -5,7 +5,19 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+// ✅ RUTAS PERSONALIZADAS PRIMERO (antes de apiResource)
 
+// 🔹 Servicios por entrenador
+Route::get('/services/trainer/{id}', [ServiceController::class, 'getByTrainer']);
+
+// 🔹 Solicitudes por entrenador
+Route::get('/requestts/trainer/{id}', [RequesttController::class, 'getByTrainer']);
+
+// 🔹 Aceptar/Rechazar solicitudes
+Route::post('/requestts/{id}/accept', [RequesttController::class, 'accept']);
+Route::post('/requestts/{id}/reject', [RequesttController::class, 'reject']);
+
+// ✅ AHORA SÍ LOS apiResource
 Route::apiResource('answers', answerController::class);
 Route::apiResource('averages', averageController::class);
 Route::apiResource('trainers', trainerController::class);
@@ -14,6 +26,7 @@ Route::apiResource('shelters', shelterController::class);
 Route::apiResource('pets', petController::class);
 Route::apiResource('adoptions', adoptionController::class);
 Route::apiResource('appointments', appointmentController::class);
+Route::apiResource('forums', ForumController::class);
 Route::apiResource('notifications', notificationController::class);
 Route::apiResource('requestts', requesttController::class);
 Route::apiResource('services', serviceController::class);
@@ -57,4 +70,16 @@ Route::middleware(['auth:api'])->group(function () {
     Route::middleware('role:4')->get('/shelter/dashboard', function () {
         return response()->json(['message' => 'Dashboard Refugio']);
     });
+
+    Route::post('/forums', [ForumController::class, 'store']);
+    Route::post('/forums/{forum}/comments', [ForumController::class, 'addComment']);
+    Route::post('/forums/{forum}/like', [ForumController::class, 'toggleLike']);
+    Route::delete('/forums/{forum}', [ForumController::class, 'destroy']);
+
+    Route::get('orders', [OrderController::class, 'index']);
+    Route::get('orders/user/{userId}', [OrderController::class, 'getByUser']);
+    Route::post('orders', [OrderController::class, 'store']);
+
+    Route::post('/appointments', [AppointmentController::class, 'store']);
+    Route::get('/user/appointments', [AppointmentController::class, 'getUserAppointments']);
 });

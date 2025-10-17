@@ -16,11 +16,11 @@ class ShelterController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string',
-            'phone' => 'nullable|string',
-            'email' => 'nullable|email',
-            'address' => 'nullable|string',
-            'responsible' => 'nullable|string',
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:50',
+            'email' => 'nullable|email|max:255',
+            'address' => 'nullable|string|max:500',
+            'responsible' => 'required|string|max:255',
             'user_id' => 'nullable|exists:users,id',
         ]);
 
@@ -30,19 +30,19 @@ class ShelterController extends Controller
 
     public function show($id)
     {
-        $shelter = Shelter::findOrFail($id);
+        $shelter = Shelter::included()->findOrFail($id);
         return response()->json($shelter);
     }
 
     public function update(Request $request, Shelter $shelter)
     {
         $request->validate([
-            'name' => 'sometimes|string',
-            'phone' => 'nullable|string',
-            'email' => 'nullable|email',
-            'address' => 'nullable|string',
-            'responsible' => 'nullable|string',
-              'user_id' => 'nullable|exists:users,id',
+            'name' => 'sometimes|string|max:255',
+            'phone' => 'nullable|string|max:50',
+            'email' => 'nullable|email|max:255',
+            'address' => 'nullable|string|max:500',
+            'responsible' => 'sometimes|string|max:255',
+            'user_id' => 'nullable|exists:users,id',
         ]);
 
         $shelter->update($request->all());

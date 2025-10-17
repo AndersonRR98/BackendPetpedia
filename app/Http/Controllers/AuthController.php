@@ -9,9 +9,10 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\User;
 use App\Models\Profile;
 use App\Models\Veterinary;
-use App\Models\Trainer;   // ✅ corregido: antes Entrenador
-use App\Models\Shelter;   // ✅ corregido: antes Refugio
+use App\Models\Trainer;
+use App\Models\Shelter;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -52,7 +53,7 @@ class AuthController extends Controller
         }
 
         try {
-            \DB::beginTransaction();
+            DB::beginTransaction();
 
             // Crear usuario
             $user = User::create([
@@ -67,7 +68,7 @@ class AuthController extends Controller
                 'user_id' => $user->id,
                 'phone' => $request->phone,
                 'address' => $request->address,
-                'biography' => $request->biography,
+                'biography' => $request->biography ?? '', // Valor por defecto si es null
             ]);
 
             // Tabla específica por rol
@@ -79,8 +80,7 @@ class AuthController extends Controller
                         'veterinary_license' => $request->veterinary_license,
                         'specialization' => $request->specialization,
                         'schedules' => $request->schedules ? json_encode($request->schedules) : json_encode($this->getDefaultVetSchedule()),
-                       'image' => $request->image ?? 'pets/default.jpg', // si no manda imagen, usa default
-
+                        'image' => $request->image ?? 'pets/default.jpg',
                     ]);
                     break;
 
@@ -93,27 +93,27 @@ class AuthController extends Controller
                         'hourly_rate' => $request->hourly_rate,
                         'rating' => 0,
                         'review_count' => 0,
-                       'image' => $request->image ?? 'pets/default.jpg', // si no manda imagen, usa default
+                        'image' => $request->image ?? 'pets/default.jpg',
                     ]);
                     break;
 
-              case 4: // Refugio
-                       Shelter::create([
-                       'user_id' => $user->id,
-                       'shelter_name' => $request->shelter_name,
-                       'responsible_person' => $request->responsible_person,
-                       'capacity' => $request->capacity,
-                       'rating' => 0, // valor por defecto
-                       'review_count' => 0, // valor por defecto
-                       'image' => $request->image ?? 'pets/default.jpg', // si no manda imagen, usa default
-                     ]);
-                     break;
+                case 4: // Refugio
+                    Shelter::create([
+                        'user_id' => $user->id,
+                        'shelter_name' => $request->shelter_name,
+                        'responsible_person' => $request->responsible_person,
+                        'capacity' => $request->capacity,
+                        'rating' => 0,
+                        'review_count' => 0,
+                        'image' => $request->image ?? 'pets/default.jpg',
+                    ]);
+                    break;
             }
 
             // Generar token
             $token = JWTAuth::fromUser($user);
 
-            \DB::commit();
+            DB::commit();
 
             return response()->json([
                 'success' => true,
@@ -123,7 +123,7 @@ class AuthController extends Controller
             ], 201);
 
         } catch (\Exception $e) {
-            \DB::rollBack();
+            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => 'Error en el registro: ' . $e->getMessage()

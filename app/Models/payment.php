@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
+/**
+ * @mixin IdeHelperpayment
+ */
 class payment extends Model
 {
     /** @use HasFactory<\Database\Factories\PaymentFactory> */

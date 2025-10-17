@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
+/**
+ * @mixin IdeHelperanswer
+ */
 class answer extends Model
 {  
     use HasFactory;

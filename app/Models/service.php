@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
+/**
+ * @mixin IdeHelperservice
+ */
 class service extends Model
 {
     /** @use HasFactory<\Database\Factories\ServiceFactory> */
@@ -39,6 +42,12 @@ class service extends Model
         'trainer_id',
         'requestt_id',
         'veterinary_id',
+    ];
+        protected $casts = [
+        'price' => 'decimal:2',
+        'trainer_id' => 'integer',
+        'requestt_id' => 'integer',
+        'veterinary_id' => 'integer'
     ];
     public function trainer():BelongsTo
     {

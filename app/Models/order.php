@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
+/**
+ * @mixin IdeHelperorder
+ */
 class order extends Model
 {
     /** @use HasFactory<\Database\Factories\OrderFactory> */
@@ -33,15 +36,15 @@ class order extends Model
     ];
     public function user():BelongsTo
     {
-        return $this->belonsto(user::class);
+        return $this->belonsTo(user::class);
     } 
-    public function orderitems():HasMany
+    public function orderItems():HasMany
     {
-        return $this->hasmany(orderitem::class);
+        return $this->hasMany(orderitem::class);
     }
     public function shipments():HasOne
     {
-        return $this->hasone(shipment::class);
+        return $this->hasOne(shipment::class);
     }
   protected function getAllowIncluded()
     {

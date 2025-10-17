@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Str;
+/**
+ * @mixin IdeHelpertrainer
+ */
 class trainer extends Model
 {
     /** @use HasFactory<\Database\Factories\TrainerFactory> */

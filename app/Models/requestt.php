@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
+/**
+ * @mixin IdeHelperrequestt
+ */
 class requestt extends Model
 {
     /** @use HasFactory<\Database\Factories\RequesttFactory> */
@@ -16,6 +19,7 @@ class requestt extends Model
         'date',
         'priority',
         'application_status',
+        'trainer_id',
         'adoption_id',
         'user_id',
     ];
@@ -24,6 +28,7 @@ class requestt extends Model
         'date',
         'priority',
         'application_status',
+        'trainer_id',
         'adoption_id',
         'user_id',
     ];
@@ -31,6 +36,7 @@ class requestt extends Model
         'date',
         'priority',
         'application_status',
+        'trainer_id',
         'adoption_id',
         'user_id',
     ];

@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
+/**
+ * @mixin IdeHelpershelter
+ */
 class shelter extends Model
 {
     /** @use HasFactory<\Database\Factories\ShelterFactory> */
