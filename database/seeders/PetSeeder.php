@@ -61,6 +61,40 @@ class PetSeeder extends Seeder
                 'updated_at' => now(),
             ],
 
+            // 🆕 Nuevas mascotas del refugio 2
+            [
+                'name' => 'Bella',
+                'age' => '1 año',
+                'species' => 'Perro',
+                'breed' => 'Beagle',
+                'size' => 10.0,
+                'sex' => 'Hembra',
+                'description' => 'Beagle alegre y sociable. Ideal para familias activas. Le encanta explorar y jugar al aire libre.',
+                'image' => 'pets/default.jpg',
+                'birth_date' => '2023-02-14',
+                'shelter_id' => 2,
+                'user_id' => null,
+                'veterinary_id' => 2,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Simba',
+                'age' => '2 años',
+                'species' => 'Gato',
+                'breed' => 'Maine Coon',
+                'size' => 6.0,
+                'sex' => 'Macho',
+                'description' => 'Gato Maine Coon grande y cariñoso. Le gusta la compañía humana y dormir cerca de las personas.',
+                'image' => 'pets/default.jpg',
+                'birth_date' => '2022-01-09',
+                'shelter_id' => 2,
+                'user_id' => null,
+                'veterinary_id' => 2,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+
             // Mascotas con dueño
             [
                 'name' => 'Bobby',

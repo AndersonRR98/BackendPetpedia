@@ -7,28 +7,34 @@ return [
     | Cross-Origin Resource Sharing (CORS) Configuration
     |--------------------------------------------------------------------------
     |
-    | Here you may configure your settings for cross-origin resource sharing
-    | or "CORS". This determines what cross-origin operations may execute
-    | in web browsers. You are free to adjust these settings as needed.
-    |
-    | To learn more: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+    | Aquí defines qué dominios pueden acceder a tu API, qué métodos HTTP
+    | están permitidos y qué headers se aceptan.
     |
     */
 
-    'paths' => ['*'],
+    // ✅ Solo aplica CORS a rutas de la API
+    'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
+    // ✅ Permitir todos los métodos HTTP
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:3000')],
+    // ✅ Permitir el dominio del frontend (Blade o Vite)
+    'allowed_origins' => [
+        env('FRONTEND_URL', 'http://localhost:8002'),
+    ],
 
     'allowed_origins_patterns' => [],
 
+    // ✅ Permitir todos los headers (Authorization incluido)
     'allowed_headers' => ['*'],
 
-    'exposed_headers' => [],
+    // 🔍 Headers que pueden ser expuestos al frontend
+    'exposed_headers' => ['Authorization', 'Content-Type'],
 
+    // ⏱ Tiempo máximo de cacheo de preflight
     'max_age' => 0,
 
+    // ⚙️ Permitir credenciales (cookies o tokens en headers)
     'supports_credentials' => true,
 
 ];

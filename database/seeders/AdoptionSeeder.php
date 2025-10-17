@@ -35,6 +35,23 @@ class AdoptionSeeder extends Seeder
                 'created_at' => now()->subDays(10),
                 'updated_at' => now()->subDays(8),
             ],
+
+            [
+                'status' => 'pending',
+                'comment' => 'Pareja joven interesada en adoptar a Bella. Viven cerca de un parque y tienen tiempo para paseos diarios.',
+                'pet_id' => 4,
+                'shelter_id' => 2,
+                'created_at' => now()->subDays(1),
+                'updated_at' => now(),
+            ],
+            [
+                'status' => 'pending',
+                'comment' => 'Familia con niños pequeños quiere adoptar a Simba. Buscan un gato sociable y tranquilo.',
+                'pet_id' => 5,
+                'shelter_id' => 2,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ];
 
         DB::table('adoptions')->insert($adoptions);

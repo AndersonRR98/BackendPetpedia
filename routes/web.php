@@ -6,3 +6,4 @@ Route::get('/', function () {
     return ['Laravel' => app()->version()];
 });
 
+
