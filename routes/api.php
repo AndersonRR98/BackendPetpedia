@@ -5,7 +5,6 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// ✅ RUTAS PERSONALIZADAS PRIMERO (antes de apiResource)
 
 // 🔹 Servicios por entrenador
 Route::get('/services/trainer/{id}', [ServiceController::class, 'getByTrainer']);
@@ -40,6 +39,8 @@ Route::apiResource('orderitems', orderitemController::class);
 Route::apiResource('payments', paymentController::class);
 Route::apiResource('paymentmethos', paymentmethoController::class);
 Route::apiResource('users', UserController::class);
+Route::apiResource('profile', ProfileController::class);
+
 
 // -------------------- Autenticación --------------------
 Route::prefix('auth')->group(function () {
@@ -70,7 +71,12 @@ Route::middleware(['auth:api'])->group(function () {
     Route::middleware('role:4')->get('/shelter/dashboard', function () {
         return response()->json(['message' => 'Dashboard Refugio']);
     });
+    // rutas que permiten actualizar el perfil y mostrar el perfil de un usuaio 
+     Route::middleware('auth:api')->put('/profile', [ProfileController::class, 'update']);
+     Route::middleware('auth:api')->get('/users/{id}', [ProfileController::class, 'show']);
 
+
+    //rutas agregadas para foros y ordenes para el aplicativo movil 
     Route::post('/forums', [ForumController::class, 'store']);
     Route::post('/forums/{forum}/comments', [ForumController::class, 'addComment']);
     Route::post('/forums/{forum}/like', [ForumController::class, 'toggleLike']);

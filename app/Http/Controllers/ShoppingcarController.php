@@ -18,7 +18,7 @@ class ShoppingcarController extends Controller
         $request->validate([
             'amount' => 'required|numeric',
             'date' => 'required|date',
-            'user_id' => 'nullable|exists:users,id',
+            'user_id' => 'required|exists:users,id',
         ]);
 
         $shoppingcar = Shoppingcar::create($request->all());
@@ -36,7 +36,7 @@ class ShoppingcarController extends Controller
         $request->validate([
             'amount' => 'sometimes|numeric',
             'date' => 'sometimes|date',
-            'user_id' => 'nullable|exists:users,id',
+            'user_id' => 'required|exists:users,id',
         ]);
 
         $shoppingcar->update($request->all());

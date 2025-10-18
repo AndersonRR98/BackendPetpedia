@@ -2,65 +2,71 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use App\Models\User;
 use App\Models\Profile;
-use App\Http\Requests\StoreProfileRequest;
-use App\Http\Requests\UpdateProfileRequest;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function show($id)
     {
-        //
+        $user = User::with('profile')->find($id);
+
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Usuario no encontrado'], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'user' => $user,
+            'profile' => $user->profile,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+   
+    public function update(Request $request)
     {
-        //
-    }
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Token inválido o expirado.'], 401);
+        }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreProfileRequest $request)
-    {
-        //
-    }
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Usuario no autenticado.'], 401);
+        }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Profile $profile)
-    {
-        //
-    }
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:255',
+            'biography' => 'nullable|string|max:1000',
+        ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Profile $profile)
-    {
-        //
-    }
+        $user->update([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+        ]);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateProfileRequest $request, Profile $profile)
-    {
-        //
-    }
+        // ✅ Actualizar o crear perfil
+        $profileData = collect($validated)->only(['phone', 'address', 'biography'])->toArray();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Profile $profile)
-    {
-        //
+        $profile = $user->profile;
+        if ($profile) {
+            $profile->update($profileData);
+        } else {
+            $profile = Profile::create(array_merge(['user_id' => $user->id], $profileData));
+        }
+
+        // ✅ Respuesta
+        return response()->json([
+            'success' => true,
+            'message' => 'Perfil actualizado correctamente.',
+            'user' => $user,
+            'profile' => $profile,
+        ]);
     }
+    
 }

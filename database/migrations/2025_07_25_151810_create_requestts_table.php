@@ -17,9 +17,9 @@ return new class extends Migration
             $table->enum('priority', ['low','medium', 'high','urgent'])->default('medium');
             // estado dos solicitudes para ver si ya se acepto o termino la solicitud 
             $table->enum('application_status', ['accepted','finished']);
-            $table->foreignId('trainer_id')->nullable('trainers')->constrained('trainers')->onDelete('set null');
+            $table->foreignId('trainer_id')->nullable()->constrained('trainers')->onDelete('set null');
             $table->foreignId('adoption_id')->nullable()->constrained('adoptions')->onDelete('set null');
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete('set null'); // Foreign key to users table
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
         });
     }
