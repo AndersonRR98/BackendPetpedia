@@ -16,7 +16,6 @@ Route::get('/requestts/trainer/{id}', [RequesttController::class, 'getByTrainer'
 Route::post('/requestts/{id}/accept', [RequesttController::class, 'accept']);
 Route::post('/requestts/{id}/reject', [RequesttController::class, 'reject']);
 
-// ✅ AHORA SÍ LOS apiResource
 Route::apiResource('answers', answerController::class);
 Route::apiResource('averages', averageController::class);
 Route::apiResource('trainers', trainerController::class);
